@@ -1,6 +1,26 @@
 # Food-delivery-bot
 Telegram bot that handles food delivery
 
+#####################################################
+
+BOT LOOP
+
+/start
+
+user info-number,name,workplace
+
+show menu
+
+get order
+
+get location
+
+recieve and verify payment
+
+send to staff and drivers
+
+######################################################
+
 We have 4 roles
 1.Customer
 2.Admin (business owner)
@@ -138,4 +158,4 @@ One bot, role-based interface
 PROJECT: Telegram Food Delivery Bot (aiogram)
 STATUS: Bot token created, starting from basic polling setup
 NEXT STEP: Build minimal /start bot response and test connection
-ARCHITECTURE DECISIONS: single kitchen, role-based system planned
+ARCHITECTURE DECISIONS: single kitchen, role-based system planned,SQlite
