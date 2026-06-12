@@ -7,13 +7,13 @@ BOT LOOP
 
 /start
 
-user info-number,name,workplace
+registration-number
 
 show menu
 
 get order
 
-get location
+get location,name
 
 recieve and verify payment
 
