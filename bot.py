@@ -27,7 +27,7 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 #SETTING UP THE DISPATCHER
-dp = Dispatcher(storage=MemoryStorage)
+dp = Dispatcher(storage=MemoryStorage())
 router = Router()
 dp.include_router(router)
 
@@ -69,7 +69,7 @@ async def phone_handler(message:Message,state:FSMContext):
 
     #Clear the keyboard
     await message.answer(
-        "✅ Registration successful!",
+        "✅ Ro'yxatdan o'tildi!",
         reply_markup=ReplyKeyboardRemove()
     )
 
@@ -82,24 +82,24 @@ async def wrong_input(message: Message):
     await message.answer("Iltimos tugma yordamida raqamingizni ulashing!")
 
 
-@router.callback_query(lambda c:c.data=="menu")
-async def show_menu(message: Message):
-    await message.answer(
-        "🍽 Bugungi Menu:",
-        reply_markup=build_menu()
-    )
+# @router.callback_query(lambda c:c.data=="menu")
+# async def show_menu(message: Message):
+#     await message.answer(
+#         "🍽 Bugungi Menu:",
+#         reply_markup=build_menu()
+#     )
 
-@router.callback_query(F.data.startswith("add:"))
-async def add_to_cart(callbackquery: CallbackQuery, state: FSMContext):
-    item_id = int(callbackquery.data.split(":")[1])
+# @router.callback_query(F.data.startswith("add:"))
+# async def add_to_cart(callbackquery: CallbackQuery, state: FSMContext):
+#     item_id = int(callbackquery.data.split(":")[1])
 
-    cart = await state.get_data()
-    cart_items = cart.get("cart",[])
+#     cart = await state.get_data()
+#     cart_items = cart.get("cart",[])
 
-    cart_items.append(item_id)
+#     cart_items.append(item_id)
 
-    await state.update_data(cart=cart_items)
+#     await state.update_data(cart=cart_items)
 
-    item = MENU[item_id]
+#     item = MENU[item_id]
 
-    await callbackquery.answer(f"{item["name"]} savatga qo'shildi.")
+#     await callbackquery.answer(f"{item["name"]} savatga qo'shildi.")
