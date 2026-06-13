@@ -17,7 +17,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from helpers import build_menu, Registration, MENU
-from helpers import save_user, is_registered
+from helpers import save_user, is_registered, main_keyboard, build_cart_keyboard, refresh_cart
 
 # LOGGING
 logging.basicConfig(
@@ -37,6 +37,16 @@ dp.include_router(router)
 async def start_handler(message: Message, state:FSMContext):
     logger.info(f"User {message.from_user.id} sent: {message.text}")
 
+    #If registered
+    if is_registered(message.from_user.id):
+        await state.clear()
+        await message.answer(
+            "👋 Xush kelibsiz!",
+            reply_markup=main_keyboard()
+        )
+        return
+    
+    #If not registered
     phone_keyboard = ReplyKeyboardMarkup(
         keyboard=[
             [KeyboardButton(text="☎️Raqamingizni Ulashing", request_contact=True)]
@@ -67,13 +77,14 @@ async def phone_handler(message:Message,state:FSMContext):
     save_user(message.from_user.id,phone_number)
     logger.info(f"User {message.from_user.id} sent: {phone_number}")
 
-    #Clear the keyboard
+    #Clear the state
+    await state.clear()
+
+    #Change the keyboard
     await message.answer(
         "✅ Ro'yxatdan o'tildi!",
-        reply_markup=ReplyKeyboardRemove()
+        reply_markup=main_keyboard()
     )
-
-    await state.clear()
 
 
 #IF DIDN'T USE THE BUTTON
@@ -81,25 +92,111 @@ async def phone_handler(message:Message,state:FSMContext):
 async def wrong_input(message: Message):
     await message.answer("Iltimos tugma yordamida raqamingizni ulashing!")
 
+#SHOWS MENU
+@router.message(F.text=="📋 Menu")
+async def show_menu(message: Message):
+    #If not registered
+    if not is_registered(message.from_user.id):
+        await message.answer("Iltimos avval ro'yxatdan o'ting. /start")
+        return
+    
+    #if registered
+    await message.answer(
+        "🍽 Bugungi Menu:",
+        reply_markup=build_menu()
+    )
 
-# @router.callback_query(lambda c:c.data=="menu")
-# async def show_menu(message: Message):
-#     await message.answer(
-#         "🍽 Bugungi Menu:",
-#         reply_markup=build_menu()
-#     )
+#ADDS ITEM TO TEMP CART
+@router.callback_query(F.data.startswith("add:"))
+async def add_to_cart(callbackquery: CallbackQuery, state: FSMContext):
+    item_id = int(callbackquery.data.split(":")[1])
 
-# @router.callback_query(F.data.startswith("add:"))
-# async def add_to_cart(callbackquery: CallbackQuery, state: FSMContext):
-#     item_id = int(callbackquery.data.split(":")[1])
+    cart = await state.get_data()
+    cart_items = cart.get("cart",{})
 
-#     cart = await state.get_data()
-#     cart_items = cart.get("cart",[])
+    #Add item to cart and its number
+    cart_items[item_id] = cart_items.get(item_id, 0) + 1
+    
+    await state.update_data(cart=cart_items)
 
-#     cart_items.append(item_id)
+    item = MENU[item_id]
 
-#     await state.update_data(cart=cart_items)
+    await callbackquery.answer(f"{item['name']} savatga qo'shildi.")
 
-#     item = MENU[item_id]
+#VIEW CART ITEMS
+@router.message(F.text=="🛒 Savat")
+async def view_cart(message: Message,state: FSMContext):
+    
+    #Get cart
+    data = await state.get_data()
+    cart = data.get("cart",{})
 
-#     await callbackquery.answer(f"{item["name"]} savatga qo'shildi.")
+    #If cart empty
+    if not cart:
+        await message.answer("🛒 Savatingiz bo'sh")
+        return
+    
+    #If not empty, show cart
+    text = "🛒 Savatingiz:\n\n"
+    total = 0
+
+    for item_id,number in cart.items():
+        item = MENU[item_id]
+        text += f"{number}x {item['name']} - {item['price']} so'm\n"
+        total+=item["price"]*number
+
+    text += f"\n💰Jami: {total}so'm"
+    
+    #Inline keyboards to edit cart
+    keyboard = build_cart_keyboard(cart)
+
+    await message.answer(text, reply_markup=keyboard)
+
+
+#CLEAR CART
+@router.callback_query(F.data == "clear_cart")
+async def clear_cart(callback: CallbackQuery, state: FSMContext):
+    await state.update_data(cart={})
+
+    await callback.message.edit_text(
+        "🗑 Savat tozalandi."
+    )
+
+    await callback.answer()
+
+#IF + IS PRESSED
+@router.callback_query(F.data.startswith("plus:"))
+async def plus_item(callback: CallbackQuery, state: FSMContext):
+    item_id = int(callback.data.split(":")[1])
+
+    data = await state.get_data()
+    cart = data.get("cart", {})
+
+    cart[item_id] += 1
+
+    await state.update_data(cart=cart)
+
+    await refresh_cart(callback, state)
+
+    await callback.answer()
+
+#IF - IS PRESSED
+@router.callback_query(F.data.startswith("minus:"))
+async def minus_item(callback: CallbackQuery, state: FSMContext):
+    item_id = int(callback.data.split(":")[1])
+
+    data = await state.get_data()
+    cart = data.get("cart", {})
+
+    cart[item_id] -= 1
+
+    if cart[item_id] <= 0:
+        del cart[item_id]
+
+    await state.update_data(cart=cart)
+
+    await refresh_cart(callback, state)
+
+    await callback.answer()
+
+#CHECKOUT PHASE
