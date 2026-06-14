@@ -209,9 +209,10 @@ async def checkout(callback: CallbackQuery, state: FSMContext):
     if not cart:
         await callback.answer("Savat bo'sh")
         return
-
+    
     await callback.message.answer(
-        "Ismingizni kiriting:"
+        "Ismingizni kiriting:",
+        reply_markup=ReplyKeyboardRemove()
     )
 
     await state.set_state(
@@ -250,7 +251,45 @@ async def recieve_name(message: Message, state: FSMContext):
         Checkout.waiting_for_location
     )
 
-# @router.message(Checkout.waiting_for_location)
-# async def get_location(message:Message,state:FSMContext):
+@router.message(Checkout.waiting_for_location,F.location)
+async def get_location(message:Message,state:FSMContext):
 
+    #Saving the location
+    await state.update_data(
+        latititude = message.location.latitude,
+        longtitude = message.location.longitude
+    )
+
+    data = await state.get_data()   
+
+    #Confirming the order
+    confirm_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="✅ Tasdiqlash",
+                    callback_data="confirm_order"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="❌ Bekor qilish",
+                    callback_data="cancel_order"
+                )
+            ]
+        ]
+    )
+
+    await message.answer(
+    f"""
+    Buyurtma tayyor:
+
+    👤 {data['customer_name']}
+
+    📍 Lokatsiya qabul qilindi
+
+    Buyurtmani tasdiqlaysizmi?.
+    """,
+    reply_markup=confirm_keyboard
+    )
 
