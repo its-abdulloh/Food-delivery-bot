@@ -2,10 +2,11 @@ from aiogram.utils.keyboard import InlineKeyboardBuilder
 from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from aiogram.fsm.context import FSMContext
+from datetime import datetime
 
 
 import sqlite3
-
+import json
 
 #NEEDED TO WAIT FOR PHONE NUMBER
 class Registration(StatesGroup):
@@ -23,6 +24,13 @@ MENU = {
     2: {"name": "Pizza", "price": 12000},
     3: {"name": "Salad", "price": 7000},
 }
+
+#ADMIN ID
+ADMIN_ID = 34324043
+
+#GET LOCATION
+def build_map_link(latitude,longitude):
+    return f"https://maps.google.com/?q={latitude},{longitude}"
 
 #FUNCTION THAT BUILDS MENU BUTTONS
 def build_menu():
@@ -135,4 +143,47 @@ def save_user(user_id: int, phone: str):
         (user_id, phone)
     )
     conn.commit()
+
+def create_order(data:dict):
+
+    # calculate total from cart
+    cart = data.get("cart", {})
+    total=0
+
+    for item_id, qty in cart.items():
+        item = MENU[int(item_id)]
+        total += item["price"] * qty
+
+    
+    cursor.execute("""
+        INSERT INTO orders (
+            user_id,
+            customer_name,
+            phone,
+            items,
+            total,
+            latitude,
+            longitude,
+            status,
+            payment_file_id
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        data["user_id"],
+        data.get("customer_name"),
+        data.get("phone"),
+        json.dumps(cart),          # items TEXT
+        total,
+        data.get("latitude"),
+        data.get("longitude"),
+        "AWAITING_PAYMENT",
+        data.get("payment_file")    
+    ))
+
+    conn.commit()
+
+    order_id = cursor.lastrowid
+    conn.close()
+
+    return order_id
 

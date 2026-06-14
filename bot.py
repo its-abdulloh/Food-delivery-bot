@@ -17,7 +17,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from helpers import build_menu, Registration, MENU
-from helpers import save_user, is_registered, main_keyboard, build_cart_keyboard, refresh_cart, Checkout
+from helpers import save_user, is_registered, main_keyboard, build_cart_keyboard, refresh_cart, Checkout, create_order, ADMIN_ID, build_map_link
 
 # LOGGING
 logging.basicConfig(
@@ -251,16 +251,40 @@ async def recieve_name(message: Message, state: FSMContext):
         Checkout.waiting_for_location
     )
 
+#AFTER THE SENDING THE LOCATION
 @router.message(Checkout.waiting_for_location,F.location)
 async def get_location(message:Message,state:FSMContext):
 
     #Saving the location
     await state.update_data(
-        latititude = message.location.latitude,
-        longtitude = message.location.longitude
+        latitude = message.location.latitude,
+        longitude = message.location.longitude
     )
 
-    data = await state.get_data()   
+    #Preparing the text
+    data = await state.get_data()
+    cart = data.get("cart", {})
+
+    text = "📦 Buyurtma:\n\n"
+    total = 0
+
+    for item_id, qty in cart.items():
+        item = MENU[item_id]
+        text += f"{qty}x {item['name']}\n"
+        total += item['price'] * qty
+
+    text += f"\n💰 Jami: {total} so'm"
+
+    text+=f"""
+
+    Buyurtma tayyor:
+
+    👤 {data['customer_name']}
+
+    📍 Lokatsiya qabul qilindi
+
+    Buyurtmani tasdiqlaysizmi?.
+    """
 
     #Confirming the order
     confirm_keyboard = InlineKeyboardMarkup(
@@ -280,16 +304,75 @@ async def get_location(message:Message,state:FSMContext):
         ]
     )
 
-    await message.answer(
-    f"""
-    Buyurtma tayyor:
+    await message.answer(text,reply_markup=confirm_keyboard)
+
+
+#IF VERIFY ORDER
+@router.callback_query(F.data == "confirm_order")
+async def confirm_order(callback: CallbackQuery,state: FSMContext):
+
+    await callback.message.answer(
+        """
+        💳 To'lov uchun karta:
+
+        8600 0604 0244 3486
+
+        Chek rasmini yuboring.
+        """
+    )
+
+    await state.set_state(
+        Checkout.waiting_for_payment
+    )
+
+    await callback.answer()
+
+
+#IF CANCEL ORDER
+@router.callback_query(F.data=="cancel_order")
+async def cancel(callback: CallbackQuery,state: FSMContext):
+    await state.clear()
+
+    await callback.message.answer(
+        "❌ Buyurtmangiz bekor qilindi.",
+        reply_markup=main_keyboard()
+    )
+
+    await callback.answer("Bekor qilindi")
+
+#WHEN THE PHOTO IS SENT
+@router.message(Checkout.waiting_for_payment,F.photo)
+async def payment_received(message: Message,state: FSMContext):
+
+    #Get the highest quality image
+    file_id = message.photo[-1].file_id
+
+    await state.update_data(payment_file=file_id)
+
+    data = await state.get_data()
+    order_id = create_order(data)
+
+    location_link = build_map_link(data.get('latitude'),data.get('longitude'))
+    await message.bot.send_photo(
+            ADMIN_ID,
+            photo=file_id,
+            caption=f"""
+    🆕 YANGI BUYURTMA #{order_id}
 
     👤 {data['customer_name']}
+    📞 {data.get('phone')}
 
-    📍 Lokatsiya qabul qilindi
+    📍 Location: {location_link}
 
-    Buyurtmani tasdiqlaysizmi?.
-    """,
-    reply_markup=confirm_keyboard
+    💰 Payment received (pending approval)
+    """
     )
+
+    await message.answer(
+        "✅ Chek qabul qilindi.\n\nAdmin tasdiqlashini kuting.",
+        reply_markup=main_keyboard()
+    )
+
+    await state.clear()
+
 
