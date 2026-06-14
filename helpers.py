@@ -11,6 +11,11 @@ import sqlite3
 class Registration(StatesGroup):
     waiting_for_phone = State()
 
+#CHECKOUT STATE
+class Checkout(StatesGroup):
+    waiting_for_name = State()
+    waiting_for_location = State()
+
 #TEMPORARY MENU
 MENU = {
     1: {"name": "Burger", "price": 10000},

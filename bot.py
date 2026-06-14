@@ -17,7 +17,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from helpers import build_menu, Registration, MENU
-from helpers import save_user, is_registered, main_keyboard, build_cart_keyboard, refresh_cart
+from helpers import save_user, is_registered, main_keyboard, build_cart_keyboard, refresh_cart, Checkout
 
 # LOGGING
 logging.basicConfig(
@@ -200,3 +200,57 @@ async def minus_item(callback: CallbackQuery, state: FSMContext):
     await callback.answer()
 
 #CHECKOUT PHASE
+@router.callback_query(F.data == "checkout")
+async def checkout(callback: CallbackQuery, state: FSMContext):
+
+    data = await state.get_data()
+    cart = data.get("cart", {})
+
+    if not cart:
+        await callback.answer("Savat bo'sh")
+        return
+
+    await callback.message.answer(
+        "Ismingizni kiriting:"
+    )
+
+    await state.set_state(
+        Checkout.waiting_for_name
+    )
+
+    await callback.answer()
+
+
+#RECIEVE NAME
+@router.message(Checkout.waiting_for_name)
+async def recieve_name(message: Message, state: FSMContext):
+
+    await state.update_data(
+        customer_name=message.text
+    )
+
+    location_keyboard = ReplyKeyboardMarkup(
+        keyboard=[
+            [
+                KeyboardButton(
+                    text="📍 Lokatsiyani yuborish",
+                    request_location=True
+                )
+            ]
+        ],
+        resize_keyboard=True
+    )
+
+    await message.answer(
+        "Lokatsiyangizni yuboring:",
+        reply_markup=location_keyboard
+    )
+
+    await state.set_state(
+        Checkout.waiting_for_location
+    )
+
+# @router.message(Checkout.waiting_for_location)
+# async def get_location(message:Message,state:FSMContext):
+
+
