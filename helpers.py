@@ -128,23 +128,34 @@ async def refresh_cart(callback: CallbackQuery, state: FSMContext):
     
 
 #---------------------------------------SQLITE HELPER FUNCTIONS---------------------------------------
-conn = sqlite3.connect("database.db")
-cursor = conn.cursor()
 
 
 def is_registered(user_id: int) -> bool:
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
     cursor.execute("SELECT 1 FROM users WHERE telegram_id = ?", (user_id,))
     return cursor.fetchone() is not None
 
 
 def save_user(user_id: int, phone: str):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
     cursor.execute(
         "INSERT INTO users (telegram_id, phone) VALUES (?, ?)",
         (user_id, phone)
     )
     conn.commit()
 
-def create_order(data:dict):
+def get_phone(user_id):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    phone = cursor.execute("SELECT phone FROM users WHERE telegram_id=?",(user_id,)).fetchone()[0]
+    return phone
+
+def create_order(data:dict,user_id):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
 
     # calculate total from cart
     cart = data.get("cart", {})
@@ -154,7 +165,8 @@ def create_order(data:dict):
         item = MENU[int(item_id)]
         total += item["price"] * qty
 
-    
+    phone = get_phone(user_id)
+
     cursor.execute("""
         INSERT INTO orders (
             user_id,
@@ -169,9 +181,9 @@ def create_order(data:dict):
         )
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
     """, (
-        data["user_id"],
+        user_id,
         data.get("customer_name"),
-        data.get("phone"),
+        phone,
         json.dumps(cart),          # items TEXT
         total,
         data.get("latitude"),

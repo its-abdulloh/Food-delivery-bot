@@ -17,7 +17,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from helpers import build_menu, Registration, MENU
-from helpers import save_user, is_registered, main_keyboard, build_cart_keyboard, refresh_cart, Checkout, create_order, ADMIN_ID, build_map_link
+from helpers import save_user, is_registered, main_keyboard, build_cart_keyboard, refresh_cart, Checkout, create_order, ADMIN_ID, build_map_link,get_phone
 
 # LOGGING
 logging.basicConfig(
@@ -349,8 +349,9 @@ async def payment_received(message: Message,state: FSMContext):
 
     await state.update_data(payment_file=file_id)
 
+    user_id = message.from_user.id
     data = await state.get_data()
-    order_id = create_order(data)
+    order_id = create_order(data,message.from_user.id)
 
     location_link = build_map_link(data.get('latitude'),data.get('longitude'))
     await message.bot.send_photo(
@@ -360,11 +361,11 @@ async def payment_received(message: Message,state: FSMContext):
     🆕 YANGI BUYURTMA #{order_id}
 
     👤 {data['customer_name']}
-    📞 {data.get('phone')}
+    📞 {get_phone(user_id)}
 
     📍 Location: {location_link}
 
-    💰 Payment received (pending approval)
+    💰 To'lov tasdiqlashi kutilmoqda
     """
     )
 
