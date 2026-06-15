@@ -385,12 +385,12 @@ async def payment_received(message: Message,state: FSMContext):
         ]
     )
 
-    text = f"🆕 YANGI BUYURTMA #{order_id}"
+    text = f"🆕 YANGI BUYURTMA #{order_id}\n"
     total = 0
 
     for item_id, qty in cart.items():
         item = MENU[item_id]
-        text += f"{qty}x {item['name']}\n"
+        text += f"\n{qty}x {item['name']}\n"
         total += item['price'] * qty
 
     text += f"\n💰 Jami: {total} so'm"
@@ -400,7 +400,7 @@ async def payment_received(message: Message,state: FSMContext):
     👤 {data['customer_name']}
     📞 {get_phone(user_id)}
 
-    📍 Location: {location_link}
+    📍 Location: {build_map_link(data.get("latitude"),data.get("longitude"))}
 
     💰 To'lov tasdiqlashi kutilmoqda
     """
@@ -422,7 +422,7 @@ async def payment_received(message: Message,state: FSMContext):
 #IF ADMIN CONFIRMS
 @router.callback_query(F.data.startswith("confirm:"))
 async def confirm(callback:CallbackQuery):
-    order_id = int(callback.split(":")[1])
+    order_id = int(callback.data.split(":")[1])
 
     update_order_status(order_id,"confirmed")
 
@@ -448,7 +448,7 @@ async def cancel_order(callback: CallbackQuery, state: FSMContext):
     await state.update_data(order_id=order_id)
 
     await callback.message.answer(
-        f"Why are you cancelling order #{order_id}?"
+        f"Nega buyurtma #{order_id}ni bekor qilyapsiz?"
     )
 
     await state.set_state(AdminCancelOrder.waiting_for_reason)
