@@ -430,16 +430,17 @@ async def confirm(callback:CallbackQuery):
 
     update_order_status(order_id,"confirmed")
 
-    await callback.message.edit_caption(
-        callback.message.caption + "\n\n✅ Tasdiqlandi"
-    )
-
     user_id = get_order_user(order_id)
     await callback.bot.send_message(
         chat_id=user_id,
         text=(
             f"✅ Tolo'vingiz tasdiqlandi\n"
         )
+    )
+
+    await callback.message.edit_caption(
+        callback.message.caption + "\n\n✅ Tasdiqlandi",
+        reply_markup=None
     )
 
     await callback.answer("Order confirmed")
@@ -453,7 +454,14 @@ async def cancel_order(callback: CallbackQuery, state: FSMContext):
 
     order_id = int(callback.data.split(":")[1])
 
-    await state.update_data(order_id=order_id)
+    await state.update_data(
+        order_id=order_id,
+        admin_chat_id=callback.message.chat.id,
+        admin_message_id=callback.message.message_id,
+        original_caption=callback.message.caption
+    )
+
+    
 
     await callback.message.answer(
         f"Nega buyurtma #{order_id}ni bekor qilyapsiz?"
@@ -463,8 +471,15 @@ async def cancel_order(callback: CallbackQuery, state: FSMContext):
 
     await callback.answer()
 
-#ASKING FOR WHY ADMIN CANCELED
+#IF INVALID REASON
 @router.message(AdminCancelOrder.waiting_for_reason)
+async def invalid_reason(message: Message):
+    await message.answer(
+        "Iltimos bekor qilish sababini matn ko'rinishida yuboring."
+    )
+
+#ASKING FOR WHY ADMIN CANCELED
+@router.message(AdminCancelOrder.waiting_for_reason,F.text)
 async def process_cancel_reason(
     message: Message,
     state: FSMContext
@@ -473,6 +488,9 @@ async def process_cancel_reason(
 
     data = await state.get_data()
     order_id = data["order_id"]
+    admin_chat_id = data["admin_chat_id"]
+    admin_message_id = data["admin_message_id"]
+    caption = data["original_caption"]
 
     update_order_status(order_id, "CANCELED")
 
@@ -488,8 +506,21 @@ Sabab:
 """
     )
 
+    await message.bot.edit_message_caption(
+        chat_id=admin_chat_id,
+        message_id=admin_message_id,
+        caption=caption + f"""
+
+❌ Buyurtma bekor qilindi
+
+Sabab:
+{reason}
+""",
+        reply_markup=None
+    )
+
     await message.answer(
-        f"Order #{order_id} cancelled."
+        f"Buyurtma #{order_id} bekor qilindi."
     )
 
     await state.clear()
