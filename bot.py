@@ -17,8 +17,21 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from helpers import build_menu, Registration, MENU
-from helpers import save_user, is_registered, main_keyboard, build_cart_keyboard, refresh_cart, Checkout, create_order, ADMIN_ID, build_map_link,get_phone
-
+from helpers import (
+    save_user,
+    is_registered,
+    main_keyboard,
+    build_cart_keyboard,
+    refresh_cart,
+    Checkout,
+    create_order,
+    ADMIN_ID,
+    build_map_link,
+    get_phone,
+    update_order_status,
+    get_order_user,
+    AdminCancelOrder
+    )
 # LOGGING
 logging.basicConfig(
     level=logging.INFO,
@@ -286,7 +299,6 @@ async def get_location(message:Message,state:FSMContext):
     Buyurtmani tasdiqlaysizmi?.
     """
 
-    #Confirming the order
     confirm_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -304,6 +316,7 @@ async def get_location(message:Message,state:FSMContext):
         ]
     )
 
+    #Confirming the order
     await message.answer(text,reply_markup=confirm_keyboard)
 
 
@@ -330,7 +343,7 @@ async def confirm_order(callback: CallbackQuery,state: FSMContext):
 
 #IF CANCEL ORDER
 @router.callback_query(F.data=="cancel_order")
-async def cancel(callback: CallbackQuery,state: FSMContext):
+async def cancel_order(callback: CallbackQuery,state: FSMContext):
     await state.clear()
 
     await callback.message.answer(
@@ -351,14 +364,38 @@ async def payment_received(message: Message,state: FSMContext):
 
     user_id = message.from_user.id
     data = await state.get_data()
+    cart = data.get("cart",{})
     order_id = create_order(data,message.from_user.id)
 
-    location_link = build_map_link(data.get('latitude'),data.get('longitude'))
-    await message.bot.send_photo(
-            ADMIN_ID,
-            photo=file_id,
-            caption=f"""
-    🆕 YANGI BUYURTMA #{order_id}
+    #Build location and send to admin
+    confirm_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="✅ Tasdiqlash",
+                    callback_data=f"confirm:{order_id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    text="❌ Bekor qilish",
+                    callback_data=f"cancel:{order_id}"
+                )
+            ]
+        ]
+    )
+
+    text = f"🆕 YANGI BUYURTMA #{order_id}"
+    total = 0
+
+    for item_id, qty in cart.items():
+        item = MENU[item_id]
+        text += f"{qty}x {item['name']}\n"
+        total += item['price'] * qty
+
+    text += f"\n💰 Jami: {total} so'm"
+
+    text+=f"""
 
     👤 {data['customer_name']}
     📞 {get_phone(user_id)}
@@ -367,7 +404,13 @@ async def payment_received(message: Message,state: FSMContext):
 
     💰 To'lov tasdiqlashi kutilmoqda
     """
-    )
+
+    location_link = build_map_link(data.get('latitude'),data.get('longitude'))
+    await message.bot.send_photo(
+            ADMIN_ID,
+            photo=file_id,
+            caption=text
+    ,reply_markup=confirm_keyboard)
 
     await message.answer(
         "✅ Chek qabul qilindi.\n\nAdmin tasdiqlashini kuting.",
@@ -376,4 +419,70 @@ async def payment_received(message: Message,state: FSMContext):
 
     await state.clear()
 
+#IF ADMIN CONFIRMS
+@router.callback_query(F.data.startswith("confirm:"))
+async def confirm(callback:CallbackQuery):
+    order_id = int(callback.split(":")[1])
+
+    update_order_status(order_id,"confirmed")
+
+    await callback.message.edit_caption(
+        callback.message.caption + "\n\n✅ Tasdiqlandi"
+    )
+
+    user_id = get_order_user(order_id)
+    await callback.bot.send_message(
+        chat_id=user_id,
+        text=(
+            f"✅ Tolo'vingiz tasdiqlandi\n"
+        )
+    )
+
+    await callback.answer("Order confirmed")
+
+#IF ADMIN CANCELS
+@router.callback_query(F.data.startswith("cancel:"))
+async def cancel_order(callback: CallbackQuery, state: FSMContext):
+    order_id = int(callback.data.split(":")[1])
+
+    await state.update_data(order_id=order_id)
+
+    await callback.message.answer(
+        f"Why are you cancelling order #{order_id}?"
+    )
+
+    await state.set_state(AdminCancelOrder.waiting_for_reason)
+
+    await callback.answer()
+
+#ASKING FOR WHY ADMIN CANCELED
+@router.message(AdminCancelOrder.waiting_for_reason)
+async def process_cancel_reason(
+    message: Message,
+    state: FSMContext
+):
+    reason = message.text
+
+    data = await state.get_data()
+    order_id = data["order_id"]
+
+    update_order_status(order_id, "CANCELED")
+
+    user_id = get_order_user(order_id)
+
+    await message.bot.send_message(
+        user_id,
+        f"""
+❌ To'lovingiz bekor qilindi.
+
+Sabab:
+{reason}
+"""
+    )
+
+    await message.answer(
+        f"Order #{order_id} cancelled."
+    )
+
+    await state.clear()
 

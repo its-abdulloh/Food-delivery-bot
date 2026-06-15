@@ -18,6 +18,10 @@ class Checkout(StatesGroup):
     waiting_for_location = State()
     waiting_for_payment = State()
 
+#CANCEL STATE
+class AdminCancelOrder(StatesGroup):
+    waiting_for_reason = State()
+
 #TEMPORARY MENU
 MENU = {
     1: {"name": "Burger", "price": 10000},
@@ -188,7 +192,7 @@ def create_order(data:dict,user_id):
         total,
         data.get("latitude"),
         data.get("longitude"),
-        "AWAITING_PAYMENT",
+        "PENDING",
         data.get("payment_file")    
     ))
 
@@ -198,4 +202,29 @@ def create_order(data:dict,user_id):
     conn.close()
 
     return order_id
+
+def update_order_status(order_id:int,status:str):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+    if status=="confirmed":
+        cursor.execute("UPDATE orders SET status=? WHERE id=?",("CONFIRMED",order_id))
+    else:
+        cursor.execute("UPDATE orders SET status=? WHERE id=?",("CANCELED",order_id))
+    conn.commit()
+    conn.close()
+
+def get_order_user(order_id: int):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "SELECT user_id FROM orders WHERE id=?",
+        (order_id,)
+    )
+
+    row = cursor.fetchone()
+    conn.close()
+
+    return row[0] if row else None
+      
 

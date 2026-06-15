@@ -1,2 +1,3 @@
 .env
 database.db
+reset_db.py
