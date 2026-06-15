@@ -422,6 +422,10 @@ async def payment_received(message: Message,state: FSMContext):
 #IF ADMIN CONFIRMS
 @router.callback_query(F.data.startswith("confirm:"))
 async def confirm(callback:CallbackQuery):
+    if callback.from_user.id != ADMIN_ID:
+        await callback.answer("Not allowed", show_alert=True)
+        return
+
     order_id = int(callback.data.split(":")[1])
 
     update_order_status(order_id,"confirmed")
@@ -443,6 +447,10 @@ async def confirm(callback:CallbackQuery):
 #IF ADMIN CANCELS
 @router.callback_query(F.data.startswith("cancel:"))
 async def cancel_order(callback: CallbackQuery, state: FSMContext):
+    if callback.from_user.id != ADMIN_ID:
+        await callback.answer("Not allowed", show_alert=True)
+        return
+
     order_id = int(callback.data.split(":")[1])
 
     await state.update_data(order_id=order_id)
