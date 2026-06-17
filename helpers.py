@@ -145,8 +145,8 @@ def save_user(user_id: int, phone: str):
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO users (telegram_id, phone) VALUES (?, ?)",
-        (user_id, phone)
+        "INSERT INTO users (telegram_id, phone,role) VALUES (?, ?, ?)",
+        (user_id, phone, "customer")
     )
     conn.commit()
 

@@ -525,3 +525,19 @@ Sabab:
 
     await state.clear()
 
+#ADD ROLES
+
+#BUILD ADMIN KEYBOARD
+# 📦 Active Orders
+# 🍳 Kitchen Queue
+# 🚗 Drivers
+# 📋 Menu Management
+# 📢 Broadcast
+# 📊 Daily Summary
+
+
+#KITCHEN UX
+# 📋 Orders
+# 📊 Summary
+#DRIVER UX
+#🚚 My Deliveries
