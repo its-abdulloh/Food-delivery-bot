@@ -6,11 +6,13 @@ from handlers.start import router as start_router
 from handlers.registration import router as registration_router
 from handlers.menu import router as menu_router
 from handlers.cart import router as cart_router
+from handlers.checkout import router as checkout_router
 
 dp.include_router(start_router)
 dp.include_router(registration_router)
 dp.include_router(menu_router)
 dp.include_router(cart_router)
+dp.include_router(checkout_router)
 
 async def main():
     bot = Bot(token=TOKEN)
