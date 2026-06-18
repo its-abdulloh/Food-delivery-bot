@@ -8,19 +8,6 @@ from datetime import datetime
 import sqlite3
 import json
 
-#NEEDED TO WAIT FOR PHONE NUMBER
-class Registration(StatesGroup):
-    waiting_for_phone = State()
-
-#CHECKOUT STATE
-class Checkout(StatesGroup):
-    waiting_for_name = State()
-    waiting_for_location = State()
-    waiting_for_payment = State()
-
-#CANCEL STATE
-class AdminCancelOrder(StatesGroup):
-    waiting_for_reason = State()
 
 #TEMPORARY MENU
 MENU = {

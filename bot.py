@@ -16,22 +16,25 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from helpers import build_menu, Registration, MENU
+from helpers import build_menu, MENU
 from helpers import (
     save_user,
     is_registered,
     main_keyboard,
     build_cart_keyboard,
     refresh_cart,
-    Checkout,
     create_order,
     ADMIN_ID,
     build_map_link,
     get_phone,
     update_order_status,
     get_order_user,
-    AdminCancelOrder
     )
+
+from states.registration import Registration
+from states.checkout import Checkout
+from states.admin import AdminCancelOrder
+
 # LOGGING
 logging.basicConfig(
     level=logging.INFO,
@@ -44,66 +47,6 @@ dp = Dispatcher(storage=MemoryStorage())
 router = Router()
 dp.include_router(router)
 
-
-#START COMMAND THAT REGISTERS USERS
-@router.message(Command("start"))
-async def start_handler(message: Message, state:FSMContext):
-    logger.info(f"User {message.from_user.id} sent: {message.text}")
-
-    #If registered
-    if is_registered(message.from_user.id):
-        await state.clear()
-        await message.answer(
-            "👋 Xush kelibsiz!",
-            reply_markup=main_keyboard()
-        )
-        return
-    
-    #If not registered
-    phone_keyboard = ReplyKeyboardMarkup(
-        keyboard=[
-            [KeyboardButton(text="☎️Raqamingizni Ulashing", request_contact=True)]
-        ],
-        resize_keyboard=True,
-        one_time_keyboard=True
-    )
-
-    await message.answer("Assalomu alekum.\nKuchli catering botiga xush kelibsiz\nRo'yxatdan o'tish uchun telefon raqamingizni yuboring.",reply_markup=phone_keyboard)
-    await state.set_state(Registration.waiting_for_phone)
-
-
-#PHONE HANDLER
-@router.message(Registration.waiting_for_phone, F.contact)
-async def phone_handler(message:Message,state:FSMContext):
-    contact = message.contact
-
-    #Verify phone number and user id
-    if contact.user_id != message.from_user.id:
-        await message.answer(
-            "❌ Iltimos o'zingizni Raqamingizni jo'nating!",
-        )
-        return
-
-    phone_number = contact.phone_number
-
-    #Save (for now print)
-    save_user(message.from_user.id,phone_number)
-    logger.info(f"User {message.from_user.id} sent: {phone_number}")
-
-    #Clear the state
-    await state.clear()
-
-    #Change the keyboard
-    await message.answer(
-        "✅ Ro'yxatdan o'tildi!",
-        reply_markup=main_keyboard()
-    )
-
-
-#IF DIDN'T USE THE BUTTON
-@router.message(Registration.waiting_for_phone)
-async def wrong_input(message: Message):
-    await message.answer("Iltimos tugma yordamida raqamingizni ulashing!")
 
 #SHOWS MENU
 @router.message(F.text=="📋 Menu")
