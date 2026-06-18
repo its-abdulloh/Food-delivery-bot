@@ -5,17 +5,13 @@ from aiogram.types import (
 )
 
 from aiogram.fsm.context import FSMContext
-from aiogram.fsm.storage.memory import MemoryStorage
 
-from helpers import MENU
 from helpers import (
     ADMIN_ID,
     update_order_status,
     get_order_user,
     )
 
-from states.registration import Registration
-from states.checkout import Checkout
 from states.admin import AdminCancelOrder
 
 
