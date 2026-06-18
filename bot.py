@@ -16,10 +16,8 @@ from aiogram.filters import Command
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from helpers import build_menu, MENU
+from helpers import MENU
 from helpers import (
-    save_user,
-    is_registered,
     main_keyboard,
     build_cart_keyboard,
     refresh_cart,

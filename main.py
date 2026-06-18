@@ -4,9 +4,11 @@ from config import TOKEN
 from bot import dp   # import dispatcher from bot.py
 from handlers.start import router as start_router
 from handlers.registration import router as registration_router
+from handlers.menu import router as menu_router
 
 dp.include_router(start_router)
 dp.include_router(registration_router)
+dp.include_router(menu_router)
 
 async def main():
     bot = Bot(token=TOKEN)
