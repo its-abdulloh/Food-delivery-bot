@@ -48,37 +48,6 @@ router = Router()
 dp.include_router(router)
 
 
-#SHOWS MENU
-@router.message(F.text=="📋 Menu")
-async def show_menu(message: Message):
-    #If not registered
-    if not is_registered(message.from_user.id):
-        await message.answer("Iltimos avval ro'yxatdan o'ting. /start")
-        return
-    
-    #if registered
-    await message.answer(
-        "🍽 Bugungi Menu:",
-        reply_markup=build_menu()
-    )
-
-#ADDS ITEM TO TEMP CART
-@router.callback_query(F.data.startswith("add:"))
-async def add_to_cart(callbackquery: CallbackQuery, state: FSMContext):
-    item_id = int(callbackquery.data.split(":")[1])
-
-    cart = await state.get_data()
-    cart_items = cart.get("cart",{})
-
-    #Add item to cart and its number
-    cart_items[item_id] = cart_items.get(item_id, 0) + 1
-    
-    await state.update_data(cart=cart_items)
-
-    item = MENU[item_id]
-
-    await callbackquery.answer(f"{item['name']} savatga qo'shildi.")
-
 #VIEW CART ITEMS
 @router.message(F.text=="🛒 Savat")
 async def view_cart(message: Message,state: FSMContext):
