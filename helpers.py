@@ -268,3 +268,30 @@ def get_order_user(order_id: int):
     return row[0] if row else None
       
 
+def generate_kitchen_summary():
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT items
+        FROM orders
+        WHERE status = 'CONFIRMED'
+    """)
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    summary = {}
+
+    for (items_json,) in rows:
+        items = json.loads(items_json)
+
+        for item_id, qty in items.items():
+            item_id = int(item_id)
+
+            if item_id not in summary:
+                summary[item_id] = 0
+
+            summary[item_id] += qty
+
+    return summary

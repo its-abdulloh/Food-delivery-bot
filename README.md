@@ -157,5 +157,5 @@ One bot, role-based interface
 
 PROJECT: Telegram Food Delivery Bot (aiogram)
 STATUS: from registration to assign driver done
-NEXT STEP: BUILD INTERFACES FOR ADMIN KITCHEN AND ADMIN
+NEXT STEP: BUILD INTERFACES FOR ADMIN, KITCHEN AND DRIVER, 11:00 batch aggregation
 ARCHITECTURE DECISIONS: single kitchen, role-based system planned,SQlite
