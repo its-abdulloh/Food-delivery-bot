@@ -40,7 +40,7 @@ def is_driver(user_id):
     if user_id == DRIVER_ID:
         return True
     else: False
-    
+
 #DETERMINE THE USER ROLE
 def get_role(user_id: int) -> str:
     return USERS.get(user_id, "customer")
@@ -205,15 +205,50 @@ def create_order(data:dict,user_id):
 
     return order_id
 
-def update_order_status(order_id:int,status:str):
+def update_order_status(order_id: int, status: str):
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
-    if status=="confirmed":
-        cursor.execute("UPDATE orders SET status=? WHERE id=?",("CONFIRMED",order_id))
-    else:
-        cursor.execute("UPDATE orders SET status=? WHERE id=?",("CANCELED",order_id))
+
+    cursor.execute(
+        "UPDATE orders SET status=? WHERE id=?",
+        (status, order_id)
+    )
+
     conn.commit()
     conn.close()
+
+def get_order(order_id: int):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("""
+        SELECT
+            user_id,
+            customer_name,
+            phone,
+            items,
+            total,
+            latitude,
+            longitude
+        FROM orders
+        WHERE id=?
+    """, (order_id,))
+
+    row = cursor.fetchone()
+    conn.close()
+
+    if not row:
+        return None
+
+    return {
+        "user_id": row[0],
+        "customer_name": row[1],
+        "phone": row[2],
+        "items": json.loads(row[3]),
+        "total": row[4],
+        "latitude": row[5],
+        "longitude": row[6]
+    }
 
 def get_order_user(order_id: int):
     conn = sqlite3.connect("database.db")

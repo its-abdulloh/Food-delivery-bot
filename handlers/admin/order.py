@@ -2,14 +2,19 @@ from aiogram import Router, F
 from aiogram.types import (
     Message,
     CallbackQuery,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
 )
 
 from aiogram.fsm.context import FSMContext
 
 from helpers import (
     ADMIN_ID,
+    KITCHEN_ID,
     update_order_status,
     get_order_user,
+    get_order,
+    MENU
     )
 
 from states.admin import AdminCancelOrder
@@ -28,6 +33,18 @@ async def confirm(callback:CallbackQuery):
 
     update_order_status(order_id,"confirmed")
 
+    send_to_kitchen = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="👨‍🍳 Oshxonaga yuborish",
+                    callback_data=f"kitchen:{order_id}"
+                )
+            ]
+        ]
+    )
+
+
     user_id = get_order_user(order_id)
     await callback.bot.send_message(
         chat_id=user_id,
@@ -38,10 +55,12 @@ async def confirm(callback:CallbackQuery):
 
     await callback.message.edit_caption(
         callback.message.caption + "\n\n✅ Tasdiqlandi",
-        reply_markup=None
+        reply_markup=send_to_kitchen
     )
 
     await callback.answer("Order confirmed")
+
+    
 
 #IF ADMIN CANCELS
 @router.callback_query(F.data.startswith("cancel:"))
@@ -122,3 +141,80 @@ Sabab:
     )
 
     await state.clear()
+
+
+#SEND TO KITCHEN
+@router.callback_query(F.data.startswith("kitchen:"))
+async def send_to_kitchen(callback: CallbackQuery):
+
+    if callback.from_user.id != ADMIN_ID:
+        await callback.answer(
+            "Not allowed",
+            show_alert=True
+        )
+        return
+
+    order_id = int(callback.data.split(":")[1])
+
+    order = get_order(order_id)
+
+    if not order:
+        await callback.answer(
+            "Order not found",
+            show_alert=True
+        )
+        return
+
+    update_order_status(
+        order_id,
+        "IN_KITCHEN"
+    )
+
+    text = f"👨‍🍳 BUYURTMA #{order_id}\n\n"
+
+    for item_id, qty in order["items"].items():
+
+        item = MENU[int(item_id)]
+
+        text += (
+            f"{qty}x {item['name']}\n"
+        )
+
+    text += f"\n💰 Jami: {order['total']} so'm"
+
+    prepared_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="✅ Prepared",
+                    callback_data=f"prepared:{order_id}"
+                )
+            ]
+        ]
+    )
+
+    await callback.bot.send_message(
+        chat_id=KITCHEN_ID,
+        text=text,
+        reply_markup=prepared_keyboard
+    )   
+
+    await callback.message.edit_caption(
+        caption=callback.message.caption
+        + "\n\n👨‍🍳 Oshxonaga yuborildi",
+        reply_markup=None
+    )
+
+    # notify customer
+    await callback.bot.send_message(
+        chat_id=order["user_id"],
+        text=(
+            "👨‍🍳 Buyurtmangiz oshxonaga yuborildi!\n\n"
+            f"📦 BUYURTMA #{order_id}\n"
+            "⏳ Hozir tayyorlanmoqda..."
+        )
+    )
+
+    await callback.answer(
+        "Oshxonaga yuborildi"
+    )
