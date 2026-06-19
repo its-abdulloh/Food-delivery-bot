@@ -12,6 +12,8 @@ from handlers.customer.cart import router as cart_router
 from handlers.customer.checkout import router as checkout_router
 
 from handlers.admin.order import router as order_router
+from handlers.admin.assign_driver import router as assign_driver_router
+from handlers.kitchen.orders import router as orders_router
 
 
 
@@ -22,6 +24,8 @@ async def main():
     dp.include_router(cart_router)
     dp.include_router(checkout_router)
     dp.include_router(order_router)
+    dp.include_router(orders_router)
+    dp.include_router(assign_driver_router)
 
     bot = Bot(token=TOKEN)
     await dp.start_polling(bot)

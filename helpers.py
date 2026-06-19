@@ -24,8 +24,11 @@ MENU = {
 #IDs
 ADMIN_ID = 34324043
 KITCHEN_ID = 987654321
-DRIVER_ID = 555555555
-
+DRIVERS = {
+    111111111: "Ali",
+    222222222: "Bek",
+    333333333: "John",
+}
 def is_admin(user_id):
     if user_id == ADMIN_ID:
         return True
@@ -37,7 +40,7 @@ def is_kitchen(user_id):
     else: False
 
 def is_driver(user_id):
-    if user_id == DRIVER_ID:
+    if user_id in DRIVERS:
         return True
     else: False
 

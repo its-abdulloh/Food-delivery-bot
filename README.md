@@ -156,6 +156,6 @@ One bot, role-based interface
 
 
 PROJECT: Telegram Food Delivery Bot (aiogram)
-STATUS: Bot token created, starting from basic polling setup
-NEXT STEP: Build minimal /start bot response and test connection
+STATUS: from registration to assign driver done
+NEXT STEP: BUILD INTERFACES FOR ADMIN KITCHEN AND ADMIN
 ARCHITECTURE DECISIONS: single kitchen, role-based system planned,SQlite

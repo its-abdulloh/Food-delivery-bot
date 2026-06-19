@@ -1,5 +1,5 @@
 from aiogram import Router, F
-from aiogram.types import CallbackQuery
+from aiogram.types import CallbackQuery,InlineKeyboardButton,InlineKeyboardMarkup
 
 from helpers import (
     ADMIN_ID,
@@ -28,13 +28,25 @@ async def mark_prepared(callback: CallbackQuery):
 
     update_order_status(order_id, "PREPARED")
 
+    assign_driver_button = InlineKeyboardMarkup(
+    inline_keyboard=[
+        [
+            InlineKeyboardButton(
+                text="🚚 Haydovchi tayinlash",
+                callback_data=f"assign_driver:{order_id}"
+            )
+        ]
+    ]
+)
+
     # notify admin
     await callback.bot.send_message(
         chat_id=ADMIN_ID,
         text=(
             f"👨‍🍳 BUYURTMA #{order_id} tayyor bo'ldi!\n"
             "🚚 Endi haydovchi tayinlash mumkin."
-        )
+        ),
+        reply_markup=assign_driver_button
     )
 
     # notify customer
