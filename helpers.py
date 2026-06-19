@@ -1,5 +1,4 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder
-from aiogram.fsm.state import StatesGroup, State
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from datetime import datetime
@@ -8,6 +7,12 @@ from datetime import datetime
 import sqlite3
 import json
 
+#USER ROLES
+USERS = {
+    123456789: "admin",
+    987654321: "kitchen",
+    555555555: "driver",
+}
 
 #TEMPORARY MENU
 MENU = {
@@ -18,6 +23,10 @@ MENU = {
 
 #ADMIN ID
 ADMIN_ID = 34324043
+
+#DETERMINE THE USER ROLE
+def get_role(user_id: int) -> str:
+    return USERS.get(user_id, "customer")
 
 #GET LOCATION
 def build_map_link(latitude,longitude):
