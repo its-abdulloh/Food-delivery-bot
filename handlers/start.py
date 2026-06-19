@@ -2,8 +2,6 @@ from aiogram import Router
 from aiogram.filters import Command
 from aiogram.types import (
     Message,
-    ReplyKeyboardMarkup,
-    KeyboardButton
 )
 from aiogram.fsm.context import FSMContext
 
@@ -18,6 +16,7 @@ from helpers import (
 from keyboards.admin import admin_keyboard
 from keyboards.kitchen import kitchen_keyboard
 from keyboards.driver import driver_keyboard
+from keyboards.customer import main_keyboard,phone_keyboard
 
 import logging
 
@@ -71,22 +70,9 @@ async def start_handler(message: Message, state: FSMContext):
     if is_registered(user_id):
         await message.answer(
             "👋 Xush kelibsiz!",
-            reply_markup=main_keyboard()
+            reply_markup=main_keyboard
         )
         return
-
-    phone_keyboard = ReplyKeyboardMarkup(
-        keyboard=[
-            [
-                KeyboardButton(
-                    text="☎️ Raqamingizni Ulashing",
-                    request_contact=True
-                )
-            ]
-        ],
-        resize_keyboard=True,
-        one_time_keyboard=True
-    )
 
     await message.answer(
         "Assalomu alekum.\n"

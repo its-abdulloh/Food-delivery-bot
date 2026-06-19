@@ -21,9 +21,26 @@ MENU = {
     3: {"name": "Salad", "price": 7000},
 }
 
-#ADMIN ID
+#IDs
 ADMIN_ID = 34324043
+KITCHEN_ID = 987654321
+DRIVER_ID = 555555555
 
+def is_admin(user_id):
+    if user_id == ADMIN_ID:
+        return True
+    else: False 
+
+def is_kitchen(user_id):
+    if user_id == KITCHEN_ID:
+        return True
+    else: False
+
+def is_driver(user_id):
+    if user_id == DRIVER_ID:
+        return True
+    else: False
+    
 #DETERMINE THE USER ROLE
 def get_role(user_id: int) -> str:
     return USERS.get(user_id, "customer")
@@ -45,17 +62,6 @@ def build_menu():
     builder.adjust(1)
     return builder.as_markup()
 
-#KEYBOARD THAT SHOWS AFTER REGISTRATION
-def main_keyboard():
-    return ReplyKeyboardMarkup(
-        keyboard=[
-            [
-                KeyboardButton(text="📋 Menu"),
-                KeyboardButton(text="🛒 Savat")
-            ]
-        ],
-        resize_keyboard=True
-    )
 
 #BUILD CART KEYBOARD
 def build_cart_keyboard(cart):
@@ -141,7 +147,7 @@ def save_user(user_id: int, phone: str):
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
     cursor.execute(
-        "INSERT INTO users (telegram_id, phone) VALUES (?, ?, ?)",
+        "INSERT INTO users (telegram_id, phone) VALUES (?, ?)",
         (user_id, phone)
     )
     conn.commit()

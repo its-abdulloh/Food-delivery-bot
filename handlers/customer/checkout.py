@@ -14,12 +14,13 @@ from states.checkout import Checkout
 
 from helpers import (
     MENU,
-    main_keyboard,
     build_map_link,
     ADMIN_ID,
     get_phone,
     create_order
 )
+
+from keyboards.customer import main_keyboard
 
 router = Router()
 
@@ -160,7 +161,7 @@ async def cancel_order(callback: CallbackQuery,state: FSMContext):
 
     await callback.message.answer(
         "❌ Buyurtmangiz bekor qilindi.",
-        reply_markup=main_keyboard()
+        reply_markup=main_keyboard
     )
 
     await callback.answer("Bekor qilindi")

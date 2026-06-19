@@ -5,9 +5,9 @@ from aiogram.fsm.context import FSMContext
 from states.registration import Registration
 
 from helpers import (
-    save_user,
-    main_keyboard
+    save_user
 )
+from keyboards.customer import main_keyboard
 import logging
 
 # LOGGING
@@ -44,7 +44,7 @@ async def phone_handler(message:Message,state:FSMContext):
     #Change the keyboard
     await message.answer(
         "✅ Ro'yxatdan o'tildi!",
-        reply_markup=main_keyboard()
+        reply_markup=main_keyboard
     )
 
 

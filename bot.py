@@ -3,8 +3,6 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 dp = Dispatcher(storage=MemoryStorage())
 
-#ADD ROLES
-
 #BUILD ADMIN KEYBOARD
 # 📦 Active Orders
 # 🍳 Kitchen Queue
@@ -17,5 +15,6 @@ dp = Dispatcher(storage=MemoryStorage())
 #KITCHEN UX
 # 📋 Orders
 # 📊 Summary
+
 #DRIVER UX
 #🚚 My Deliveries
