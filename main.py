@@ -5,7 +5,7 @@ from config import TOKEN
 from bot import dp   # import dispatcher from bot.py
 
 
-from handlers.customer.start import router as start_router
+from handlers.start import router as start_router
 from handlers.customer.registration import router as registration_router
 from handlers.customer.menu import router as menu_router
 from handlers.customer.cart import router as cart_router
