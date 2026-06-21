@@ -31,7 +31,7 @@ async def confirm(callback:CallbackQuery):
 
     order_id = int(callback.data.split(":")[1])
 
-    update_order_status(order_id,"confirmed")
+    update_order_status(order_id,"CONFIRMED")
 
     send_to_kitchen = InlineKeyboardMarkup(
         inline_keyboard=[
