@@ -36,6 +36,12 @@ async def show_menu(message: Message):
 #ADDS ITEM TO TEMP CART
 @router.callback_query(F.data.startswith("add:"))
 async def add_to_cart(callbackquery: CallbackQuery, state: FSMContext):
+    if not orders_are_open():
+        await callbackquery.answer(
+            "Buyurtmalar yopilgan",
+            show_alert=True
+        )
+        return
     item_id = int(callbackquery.data.split(":")[1])
 
     cart = await state.get_data()

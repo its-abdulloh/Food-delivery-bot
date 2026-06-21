@@ -17,7 +17,8 @@ from helpers import (
     build_map_link,
     ADMIN_ID,
     get_phone,
-    create_order
+    create_order,
+    orders_are_open
 )
 
 from keyboards.customer import main_keyboard
@@ -29,6 +30,12 @@ router = Router()
 @router.callback_query(F.data == "checkout")
 async def checkout(callback: CallbackQuery, state: FSMContext):
 
+    if not orders_are_open():
+        await callback.message.answer(
+            "🔴 Bugun buyurtmalar qabul qilinmayapti."
+        )
+        return
+    
     data = await state.get_data()
     cart = data.get("cart", {})
 

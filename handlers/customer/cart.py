@@ -20,12 +20,6 @@ async def view_cart(message: Message,state: FSMContext):
     data = await state.get_data()
     cart = data.get("cart",{})
 
-    if not orders_are_open():
-        await message.answer(
-            "🔴 Bugun buyurtmalar qabul qilinmayapti."
-        )
-        return
-
     #If cart empty
     if not cart:
         await message.answer("🛒 Savatingiz bo'sh")

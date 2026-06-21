@@ -30,19 +30,15 @@ DRIVERS = {
     333333333: "John",
 }
 def is_admin(user_id):
-    if user_id == ADMIN_ID:
-        return True
-    else: False 
+    return user_id == ADMIN_ID
+
 
 def is_kitchen(user_id):
-    if user_id == KITCHEN_ID:
-        return True
-    else: False
+    return user_id == KITCHEN_ID
+
 
 def is_driver(user_id):
-    if user_id in DRIVERS:
-        return True
-    else: False
+    return user_id in DRIVERS
 
 #DETERMINE THE USER ROLE
 def get_role(user_id: int) -> str:
@@ -138,13 +134,20 @@ async def refresh_cart(callback: CallbackQuery, state: FSMContext):
 
 #---------------------------------------SQLITE HELPER FUNCTIONS---------------------------------------
 
-
 def is_registered(user_id: int) -> bool:
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
-    cursor.execute("SELECT 1 FROM users WHERE telegram_id = ?", (user_id,))
-    return cursor.fetchone() is not None
 
+    cursor.execute(
+        "SELECT 1 FROM users WHERE telegram_id=?",
+        (user_id,)
+    )
+
+    result = cursor.fetchone() is not None
+
+    conn.close()
+
+    return result
 
 def save_user(user_id: int, phone: str):
     conn = sqlite3.connect("database.db")
@@ -154,6 +157,7 @@ def save_user(user_id: int, phone: str):
         (user_id, phone)
     )
     conn.commit()
+    conn.close()
 
 def get_phone(user_id):
     conn = sqlite3.connect("database.db")
