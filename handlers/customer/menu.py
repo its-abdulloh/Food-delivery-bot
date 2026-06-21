@@ -5,7 +5,8 @@ from aiogram.fsm.context import FSMContext
 from helpers import (
     is_registered,
     build_menu,
-    MENU
+    MENU,
+    orders_are_open
 )
 
 router = Router()
@@ -20,6 +21,12 @@ async def show_menu(message: Message):
         return
     
     #if registered
+
+    if not orders_are_open():
+        await message.answer(
+            "🔴 Bugun buyurtmalar qabul qilinmayapti."
+        )
+        return
     await message.answer(
         "🍽 Bugungi Menu:",
         reply_markup=build_menu()

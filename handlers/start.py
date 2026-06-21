@@ -10,10 +10,11 @@ from states.registration import Registration
 from helpers import (
     is_registered,
     main_keyboard,
-    get_role
+    get_role,
+    orders_are_open
 )
 
-from keyboards.admin import admin_keyboard
+from keyboards.admin import get_admin_keyboard
 from keyboards.kitchen import kitchen_keyboard
 from keyboards.driver import driver_keyboard
 from keyboards.customer import main_keyboard,phone_keyboard
@@ -46,7 +47,7 @@ async def start_handler(message: Message, state: FSMContext):
     if role == "admin":
         await message.answer(
             "👨‍💼 Admin Panel",
-            reply_markup=admin_keyboard
+            reply_markup=get_admin_keyboard(orders_are_open())
         )
         return
 

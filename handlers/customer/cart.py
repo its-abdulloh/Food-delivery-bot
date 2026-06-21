@@ -5,7 +5,8 @@ from aiogram.fsm.context import FSMContext
 from helpers import (
     MENU,
     build_cart_keyboard,
-    refresh_cart
+    refresh_cart,
+    orders_are_open
 )
 
 router = Router()
@@ -18,6 +19,12 @@ async def view_cart(message: Message,state: FSMContext):
     #Get cart
     data = await state.get_data()
     cart = data.get("cart",{})
+
+    if not orders_are_open():
+        await message.answer(
+            "🔴 Bugun buyurtmalar qabul qilinmayapti."
+        )
+        return
 
     #If cart empty
     if not cart:
