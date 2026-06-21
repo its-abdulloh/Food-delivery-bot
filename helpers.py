@@ -224,6 +224,18 @@ def update_order_status(order_id: int, status: str):
     conn.commit()
     conn.close()
 
+def update_status_where(prev:str, new:str):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "UPDATE orders SET status=? WHERE status=?",
+        (new, prev)
+    )
+
+    conn.commit()
+    conn.close()
+
 def get_order(order_id: int):
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
