@@ -295,3 +295,39 @@ def generate_kitchen_summary():
             summary[item_id] += qty
 
     return summary
+
+#SET ORDERS STATUS
+def set_orders_open(is_open: bool):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        UPDATE settings
+        SET value = ?
+        WHERE key = 'orders_open'
+        """,
+        ("1" if is_open else "0",)
+    )
+
+    conn.commit()
+    conn.close()
+
+#CHECK IF ITS OPEN
+def orders_are_open():
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        SELECT value
+        FROM settings
+        WHERE key = 'orders_open'
+        """
+    )
+
+    row = cursor.fetchone()
+
+    conn.close()
+
+    return row and row[0] == "1"
