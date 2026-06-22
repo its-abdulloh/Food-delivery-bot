@@ -7,10 +7,10 @@ from aiogram.types import (
 
 from helpers import (
     ADMIN_ID,
-    KITCHEN_ID,
     DRIVERS,
     update_order_status,
-    get_order
+    get_order,
+    build_map_link
 )
 
 router = Router()
@@ -70,10 +70,10 @@ async def set_driver(callback: CallbackQuery):
         chat_id=driver_id,
         text=(
             "🚚 YANGI BUYURTMA\n\n"
-            f"📦 Order #{order_id}\n"
+            f"📦 Buyurtma #{order_id}\n"
             f"👤 {order['customer_name']}\n"
             f"📞 {order['phone']}\n\n"
-            "📍 Yetkazib berishga tayyor!"
+            f"📍 {build_map_link(order['latitude'],order['longtitude'])}"
         )
     )
 
