@@ -65,6 +65,16 @@ async def set_driver(callback: CallbackQuery):
 
     update_order_status(order_id, "ASSIGNED_DRIVER")
 
+    driver_keyboard = InlineKeyboardMarkup(
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="☑️ Oldm",
+                    callback_data=f"picked_up:{order_id}"
+                )
+            ]
+        ]
+    )
     # notify driver
     await callback.bot.send_message(
         chat_id=driver_id,
@@ -74,7 +84,8 @@ async def set_driver(callback: CallbackQuery):
             f"👤 {order['customer_name']}\n"
             f"📞 {order['phone']}\n\n"
             f"📍 {build_map_link(order['latitude'],order['longtitude'])}"
-        )
+        ),
+        reply_markup=driver_keyboard
     )
 
     # notify customer
