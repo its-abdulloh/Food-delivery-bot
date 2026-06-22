@@ -186,7 +186,7 @@ async def send_to_kitchen(callback: CallbackQuery):
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="✅ Prepared",
+                    text="✅ Tayyor",
                     callback_data=f"prepared:{order_id}"
                 )
             ]
@@ -210,7 +210,6 @@ async def send_to_kitchen(callback: CallbackQuery):
         chat_id=order["user_id"],
         text=(
             "👨‍🍳 Buyurtmangiz oshxonaga yuborildi!\n\n"
-            f"📦 BUYURTMA #{order_id}\n"
             "⏳ Hozir tayyorlanmoqda..."
         )
     )

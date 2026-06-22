@@ -11,8 +11,8 @@ def get_admin_keyboard(orders_open: bool):
         keyboard=[
             [toggle_btn],
             [KeyboardButton(text="📋 Buyurtmalar")],
-            [KeyboardButton(text="🍔 Menu")],
-            [KeyboardButton(text="👨‍🍳 Oshxonaga jo'natish")]
+            [KeyboardButton(text="🍔 Menu")]
+            # [KeyboardButton(text="👨‍🍳 Oshxonaga jo'natish")]
         ],
         resize_keyboard=True
     )

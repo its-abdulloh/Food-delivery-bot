@@ -46,7 +46,7 @@ async def start_handler(message: Message, state: FSMContext):
     # ADMIN
     if role == "admin":
         await message.answer(
-            "👨‍💼 Admin Panel",
+            "👨‍💼 Admin Paneli",
             reply_markup=get_admin_keyboard(orders_are_open())
         )
         return
@@ -54,7 +54,7 @@ async def start_handler(message: Message, state: FSMContext):
     # KITCHEN
     if role == "kitchen":
         await message.answer(
-            "👨‍🍳 Kitchen Panel",
+            "👨‍🍳 Oshxona Paneli",
             reply_markup=kitchen_keyboard
         )
         return
@@ -62,7 +62,7 @@ async def start_handler(message: Message, state: FSMContext):
     # DRIVER
     if role == "driver":
         await message.answer(
-            "🚚 Driver Panel",
+            "🚚 Haydovchi Paneli",
             reply_markup=driver_keyboard
         )
         return

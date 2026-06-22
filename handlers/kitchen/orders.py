@@ -29,15 +29,15 @@ async def mark_prepared(callback: CallbackQuery):
     update_order_status(order_id, "PREPARED")
 
     assign_driver_button = InlineKeyboardMarkup(
-    inline_keyboard=[
-        [
-            InlineKeyboardButton(
-                text="🚚 Haydovchi tayinlash",
-                callback_data=f"assign_driver:{order_id}"
-            )
+        inline_keyboard=[
+            [
+                InlineKeyboardButton(
+                    text="🚚 Haydovchi tayinlash",
+                    callback_data=f"assign_driver:{order_id}"
+                )
+            ]
         ]
-    ]
-)
+    )
 
     # notify admin
     await callback.bot.send_message(

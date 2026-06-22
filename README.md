@@ -156,8 +156,8 @@ One bot, role-based interface
 
 
 PROJECT: Telegram Food Delivery Bot (aiogram)
-STATUS: Close/Open Orders for Admin
-NEXT STEP: BUILD INTERFACES FOR ADMIN, KITCHEN AND DRIVER, 11:00 batch aggregation
+STATUS: Close/Open Orders for Admin,send to kitchen
+NEXT STEP: BUILD INTERFACES FOR ADMIN, KITCHEN AND DRIVER
 ARCHITECTURE DECISIONS: single kitchen, role-based system planned,SQlite
 
 
