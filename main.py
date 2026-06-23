@@ -13,6 +13,7 @@ from handlers.customer.checkout import router as checkout_router
 
 from handlers.admin.order import router as order_router
 from handlers.admin.assign_driver import router as assign_driver_router
+from handlers.admin.open_close import router as open_close_router
 from handlers.kitchen.orders import router as orders_router
 
 
@@ -26,6 +27,7 @@ async def main():
     dp.include_router(order_router)
     dp.include_router(orders_router)
     dp.include_router(assign_driver_router)
+    dp.include_router(open_close_router)
 
     bot = Bot(token=TOKEN)
     await dp.start_polling(bot)

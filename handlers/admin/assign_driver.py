@@ -69,7 +69,7 @@ async def set_driver(callback: CallbackQuery):
         inline_keyboard=[
             [
                 InlineKeyboardButton(
-                    text="☑️ Oldm",
+                    text="☑️ Jo'natmani Oldm",
                     callback_data=f"picked_up:{order_id}"
                 )
             ]
@@ -88,15 +88,9 @@ async def set_driver(callback: CallbackQuery):
         reply_markup=driver_keyboard
     )
 
-    # notify customer
-    await callback.bot.send_message(
-        chat_id=order["user_id"],
-        text="🚚 Buyurtmangiz yo'lda!\n\n"
-    )
-
     # update admin message
     await callback.message.edit_text(
-        callback.message.text + "\n\n🚚 Driver tayinlandi",
+        callback.message.text + "\n\n🚚 Haydovchi tayinlandi",
         reply_markup=None
     )
 

@@ -1,4 +1,9 @@
-from aiogram.types import ReplyKeyboardMarkup, KeyboardButton
+from aiogram.types import (
+    ReplyKeyboardMarkup,
+    KeyboardButton,
+    InlineKeyboardMarkup,
+    InlineKeyboardButton
+)
 
 driver_keyboard = ReplyKeyboardMarkup(
     keyboard=[
@@ -6,3 +11,4 @@ driver_keyboard = ReplyKeyboardMarkup(
     ],
     resize_keyboard=True
 )
+
