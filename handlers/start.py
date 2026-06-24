@@ -55,7 +55,6 @@ async def start_handler(message: Message, state: FSMContext):
     if role == "kitchen":
         await message.answer(
             "👨‍🍳 Oshxona Paneli",
-            reply_markup=kitchen_keyboard
         )
         return
 
@@ -63,7 +62,6 @@ async def start_handler(message: Message, state: FSMContext):
     if role == "driver":
         await message.answer(
             "🚚 Haydovchi Paneli",
-            reply_markup=driver_keyboard
         )
         return
 

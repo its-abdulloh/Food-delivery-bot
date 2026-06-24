@@ -3,11 +3,13 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
 
 from helpers import (
-    MENU,
+    get_menu,
     build_cart_keyboard,
     refresh_cart,
     orders_are_open
 )
+
+MENU = get_menu()
 
 router = Router()
 

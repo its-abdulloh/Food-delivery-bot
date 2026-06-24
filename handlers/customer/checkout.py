@@ -13,13 +13,15 @@ from aiogram.fsm.context import FSMContext
 from states.checkout import Checkout
 
 from helpers import (
-    MENU,
+    get_menu,
     build_map_link,
     ADMIN_ID,
     get_phone,
     create_order,
     orders_are_open
 )
+
+MENU = get_menu()
 
 from keyboards.customer import main_keyboard
 

@@ -284,33 +284,33 @@ def get_order_user(order_id: int):
     return row[0] if row else None
       
 
-def generate_kitchen_summary():
-    conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
+# def generate_kitchen_summary():
+#     conn = sqlite3.connect("database.db")
+#     cursor = conn.cursor()
 
-    cursor.execute("""
-        SELECT items
-        FROM orders
-        WHERE status = 'CONFIRMED'
-    """)
+#     cursor.execute("""
+#         SELECT items
+#         FROM orders
+#         WHERE status = 'CONFIRMED'
+#     """)
 
-    rows = cursor.fetchall()
-    conn.close()
+#     rows = cursor.fetchall()
+#     conn.close()
 
-    summary = {}
+#     summary = {}
 
-    for (items_json,) in rows:
-        items = json.loads(items_json)
+#     for (items_json,) in rows:
+#         items = json.loads(items_json)
 
-        for item_id, qty in items.items():
-            item_id = int(item_id)
+#         for item_id, qty in items.items():
+#             item_id = int(item_id)
 
-            if item_id not in summary:
-                summary[item_id] = 0
+#             if item_id not in summary:
+#                 summary[item_id] = 0
 
-            summary[item_id] += qty
+#             summary[item_id] += qty
 
-    return summary
+#     return summary
 
 #SET ORDERS STATUS
 def set_orders_open(is_open: bool):
@@ -347,3 +347,48 @@ def orders_are_open():
     conn.close()
 
     return row and row[0] == "1"
+
+#MENU
+def insert_menu_item(name, price):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "INSERT INTO menu (name, price) VALUES (?, ?)",
+        (name, price)
+    )
+
+    conn.commit()
+    conn.close()
+
+
+def get_menu():
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute("SELECT name, price FROM menu")
+
+    rows = cursor.fetchall()
+    conn.close()
+
+    return rows
+
+
+def seed_menu_from_dict():
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    # optional: clear existing menu
+    cursor.execute("DELETE FROM menu")
+
+    for item_id, item in MENU.items():
+        cursor.execute(
+            "INSERT INTO menu (name, price) VALUES (?, ?)",
+            (item["name"], item["price"])
+        )
+
+    conn.commit()
+    conn.close()
+
+if __name__ == "__main__":
+    seed_menu_from_dict()

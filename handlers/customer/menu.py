@@ -5,9 +5,11 @@ from aiogram.fsm.context import FSMContext
 from helpers import (
     is_registered,
     build_menu,
-    MENU,
+    get_menu,
     orders_are_open
 )
+
+MENU = get_menu()
 
 router = Router()
 
