@@ -15,8 +15,6 @@ from helpers import (
 )
 
 from keyboards.admin import get_admin_keyboard
-from keyboards.kitchen import kitchen_keyboard
-from keyboards.driver import driver_keyboard
 from keyboards.customer import main_keyboard,phone_keyboard
 
 import logging
