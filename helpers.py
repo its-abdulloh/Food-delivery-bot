@@ -349,13 +349,24 @@ def orders_are_open():
     return row and row[0] == "1"
 
 #MENU
-def insert_menu_item(name, price):
+def add_menu_item(name, price):
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
 
     cursor.execute(
         "INSERT INTO menu (name, price) VALUES (?, ?)",
         (name, price)
+    )
+
+    conn.commit()
+    conn.close()
+
+def clear_menu():
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM menu"
     )
 
     conn.commit()

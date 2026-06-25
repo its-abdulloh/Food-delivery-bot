@@ -4,6 +4,5 @@ from aiogram.fsm.state import StatesGroup, State
 class AdminCancelOrder(StatesGroup):
     waiting_for_reason = State()
 
-class AddMenuItem(StatesGroup):
-    name = State()
-    price = State()
+class MenuState(StatesGroup):
+    waiting_for_menu = State()
