@@ -5,7 +5,7 @@ from aiogram.types import (
 from aiogram.fsm.context import FSMContext
 
 from states.admin import MenuState
-from helpers import clear_menu,add_menu_item
+from helpers import clear_menu,add_menu_item,parse_line
 
 
 router = Router()
@@ -30,11 +30,7 @@ async def save_menu(message: Message, state: FSMContext):
         clear_menu()
 
         for line in lines:
-            name, price = line.split("-")
-
-            name = name.strip()
-            price = int(price.strip())
-
+            name, price = parse_line(line)  # ✅ use helper
             add_menu_item(name, price)
 
         await message.answer("✅ Bugungi menu saqlandi.")

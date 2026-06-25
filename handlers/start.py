@@ -9,7 +9,6 @@ from states.registration import Registration
 
 from helpers import (
     is_registered,
-    main_keyboard,
     get_role,
     orders_are_open
 )

@@ -9,7 +9,7 @@ import json
 
 #USER ROLES
 USERS = {
-    123456789: "admin",
+    343240431: "admin",
     987654321: "kitchen",
     555555555: "driver",
 }
@@ -22,7 +22,7 @@ MENU = {
 }
 
 #IDs
-ADMIN_ID = 34324043
+ADMIN_ID = 343240431
 KITCHEN_ID = 987654321
 DRIVERS = {
     111111111: "Ali",
@@ -43,6 +43,22 @@ def is_driver(user_id):
 #DETERMINE THE USER ROLE
 def get_role(user_id: int) -> str:
     return USERS.get(user_id, "customer")
+
+
+#MENU VALIDATION
+def parse_line(line: str):
+    if "-" not in line:
+        raise ValueError("Invalid format")
+
+    name, price = line.rsplit("-", 1)
+
+    name = name.strip()
+    price = price.strip()
+
+    if not price.isdigit():
+        raise ValueError("Price must be number")
+
+    return name, int(price)
 
 #GET LOCATION
 def build_map_link(latitude,longitude):
@@ -354,7 +370,7 @@ def add_menu_item(name, price):
     cursor = conn.cursor()
 
     cursor.execute(
-        "INSERT INTO menu (name, price) VALUES (?, ?)",
+        "INSERT INTO menu (food_name, price) VALUES (?, ?)",
         (name, price)
     )
 
@@ -377,7 +393,7 @@ def get_menu():
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
 
-    cursor.execute("SELECT name, price FROM menu")
+    cursor.execute("SELECT food_name, price FROM menu")
 
     rows = cursor.fetchall()
     conn.close()
