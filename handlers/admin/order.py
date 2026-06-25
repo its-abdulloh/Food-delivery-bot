@@ -14,8 +14,10 @@ from helpers import (
     update_order_status,
     get_order_user,
     get_order,
-    MENU
+    get_menu
     )
+
+MENU = get_menu()
 
 from states.admin import AdminCancelOrder
 
@@ -53,12 +55,13 @@ async def confirm(callback:CallbackQuery):
         )
     )
 
-    await callback.message.edit_caption(
-        callback.message.caption + "\n\n✅ Tasdiqlandi",
+    await callback.bot.send_message(
+        chat_id=ADMIN_ID,
+        text=f"✅ Buyurtma #{order_id} tasdiqlandi",
         reply_markup=send_to_kitchen
     )
 
-    await callback.answer("Order confirmed")
+    await callback.answer("Buyurtma tasdiqlandi.")
 
     
 

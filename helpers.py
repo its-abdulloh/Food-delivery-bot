@@ -9,17 +9,11 @@ import json
 
 #USER ROLES
 USERS = {
-    34324043: "admin",
+    343240431: "admin",
     987654321: "kitchen",
     555555555: "driver",
 }
 
-#TEMPORARY MENU
-MENU = {
-    1: {"name": "Burger", "price": 10000},
-    2: {"name": "Pizza", "price": 12000},
-    3: {"name": "Salad", "price": 7000},
-}
 
 #IDs
 ADMIN_ID = 34324043
@@ -65,15 +59,15 @@ def build_map_link(latitude,longitude):
     return f"https://maps.google.com/?q={latitude},{longitude}"
 
 #FUNCTION THAT BUILDS MENU BUTTONS
-def build_menu():
+def build_menu(menu: dict):
     builder = InlineKeyboardBuilder()
 
-    for item_id, item in MENU.items():
+    for item_id, item in menu.items():
         builder.button(
-            text=f"{item["name"]} - {item["price"]}sum",
+            text=f"{item['name']} - {item['price']} so'm",
             callback_data=f"add:{item_id}"
         )
-    
+
     builder.adjust(1)
     return builder.as_markup()
 
@@ -128,6 +122,7 @@ async def refresh_cart(callback: CallbackQuery, state: FSMContext):
     text = "🛒 Savatingiz:\n\n"
     total = 0
 
+    MENU = get_menu()
     for item_id, quantity in cart.items():
         item = MENU[item_id]
 
@@ -189,6 +184,8 @@ def create_order(data:dict,user_id):
     # calculate total from cart
     cart = data.get("cart", {})
     total=0
+
+    MENU = get_menu()
 
     for item_id, qty in cart.items():
         item = MENU[int(item_id)]
@@ -388,34 +385,41 @@ def clear_menu():
     conn.commit()
     conn.close()
 
-
 def get_menu():
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
 
-    cursor.execute("SELECT food_name, price FROM menu")
-
+    cursor.execute("SELECT id, food_name, price FROM menu")
     rows = cursor.fetchall()
+
     conn.close()
 
-    return rows
+    menu_dict = {}
+
+    for item_id, name, price in rows:
+        menu_dict[item_id] = {
+            "name": name,
+            "price": price
+        }
+
+    return menu_dict
 
 
-def seed_menu_from_dict():
-    conn = sqlite3.connect("database.db")
-    cursor = conn.cursor()
+# def seed_menu_from_dict():
+#     conn = sqlite3.connect("database.db")
+#     cursor = conn.cursor()
 
-    # optional: clear existing menu
-    cursor.execute("DELETE FROM menu")
+#     # optional: clear existing menu
+#     cursor.execute("DELETE FROM menu")
 
-    for item_id, item in MENU.items():
-        cursor.execute(
-            "INSERT INTO menu (name, price) VALUES (?, ?)",
-            (item["name"], item["price"])
-        )
+#     for item_id, item in MENU.items():
+#         cursor.execute(
+#             "INSERT INTO menu (name, price) VALUES (?, ?)",
+#             (item["name"], item["price"])
+#         )
 
-    conn.commit()
-    conn.close()
+#     conn.commit()
+#     conn.close()
 
-if __name__ == "__main__":
-    seed_menu_from_dict()
+# if __name__ == "__main__":
+#     seed_menu_from_dict()

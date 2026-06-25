@@ -31,7 +31,7 @@ async def show_menu(message: Message):
         return
     await message.answer(
         "🍽 Bugungi Menu:",
-        reply_markup=build_menu()
+        reply_markup=build_menu(MENU)
     )
 
 

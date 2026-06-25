@@ -1,3 +1,4 @@
 .env
 database.db
 reset_db.py
+__pycache__

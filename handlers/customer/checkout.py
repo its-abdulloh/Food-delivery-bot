@@ -96,6 +96,10 @@ async def get_location(message:Message,state:FSMContext):
         longitude = message.location.longitude
     )
 
+    await message.answer(
+        "📍 Lokatsiya qabul qilindi.",
+        reply_markup=ReplyKeyboardRemove()
+    )
     #Preparing the text
     data = await state.get_data()
     cart = data.get("cart", {})
@@ -176,20 +180,18 @@ async def cancel_order(callback: CallbackQuery,state: FSMContext):
     await callback.answer("Bekor qilindi")
 
 #WHEN THE PHOTO IS SENT
-@router.message(Checkout.waiting_for_payment,F.photo)
-async def payment_received(message: Message,state: FSMContext):
+@router.message(Checkout.waiting_for_payment, F.photo)
+async def payment_received(message: Message, state: FSMContext):
 
-    #Get the highest quality image
     file_id = message.photo[-1].file_id
 
-    await state.update_data(payment_file=file_id)
+    data = await state.get_data()
+    cart = data.get("cart", {})
 
     user_id = message.from_user.id
-    data = await state.get_data()
-    cart = data.get("cart",{})
-    order_id = create_order(data,message.from_user.id)
 
-    #Build location and send to admin
+    order_id = create_order(data, user_id)
+
     confirm_keyboard = InlineKeyboardMarkup(
         inline_keyboard=[
             [
@@ -208,35 +210,37 @@ async def payment_received(message: Message,state: FSMContext):
     )
 
     text = f"🆕 YANGI BUYURTMA #{order_id}\n"
+
     total = 0
 
     for item_id, qty in cart.items():
-        item = MENU[item_id]
-        text += f"\n{qty}x {item['name']}\n"
+        item = MENU.get(item_id)
+
+        if not item:
+            continue
+
+        text += f"{qty}x {item['name']}\n"
         total += item['price'] * qty
 
-    text += f"\n💰 Jami: {total} so'm"
+    text += f"\n💰 Jami: {total} so'm\n\n"
 
-    text+=f"""
+    text += (
+        f"👤 {data.get('customer_name')}\n"
+        f"📞 {get_phone(user_id)}\n"
+        f"📍 Location: {build_map_link(data.get('latitude'), data.get('longitude'))}\n\n"
+        f"💰 To'lov tasdiqlashi kutilmoqda"
+    )
 
-    👤 {data['customer_name']}
-    📞 {get_phone(user_id)}
-
-    📍 Location: {build_map_link(data.get("latitude"),data.get("longitude"))}
-
-    💰 To'lov tasdiqlashi kutilmoqda
-    """
-
-    location_link = build_map_link(data.get('latitude'),data.get('longitude'))
     await message.bot.send_photo(
-            ADMIN_ID,
-            photo=file_id,
-            caption=text
-    ,reply_markup=confirm_keyboard)
+        chat_id=ADMIN_ID,
+        photo=file_id,
+        caption=text,
+        reply_markup=confirm_keyboard
+    )
 
     await message.answer(
         "✅ Chek qabul qilindi.\n\nAdmin tasdiqlashini kuting.",
-        reply_markup=main_keyboard()
+        reply_markup=main_keyboard
     )
 
     await state.clear()
