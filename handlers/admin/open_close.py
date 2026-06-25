@@ -12,7 +12,7 @@ from keyboards.admin import get_admin_keyboard
 
 router = Router()
 
-@router.message(F.text == "🟢 Open Orders")
+@router.message(F.text == "🟢 Buyurtmalarni boshlash")
 async def open_orders_handler(message: Message):
 
     if message.from_user.id != ADMIN_ID:
@@ -25,7 +25,7 @@ async def open_orders_handler(message: Message):
         reply_markup=get_admin_keyboard(True)
     )
 
-@router.message(F.text == "🔴 Close Orders")
+@router.message(F.text == "🔴 Buyurtmalarni to'xtatish")
 async def close_orders_handler(message: Message):
 
     if message.from_user.id != ADMIN_ID:

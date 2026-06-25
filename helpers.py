@@ -9,7 +9,7 @@ import json
 
 #USER ROLES
 USERS = {
-    343240431: "admin",
+    34324043: "admin",
     987654321: "kitchen",
     555555555: "driver",
 }
@@ -22,7 +22,7 @@ MENU = {
 }
 
 #IDs
-ADMIN_ID = 343240431
+ADMIN_ID = 34324043
 KITCHEN_ID = 987654321
 DRIVERS = {
     111111111: "Ali",
