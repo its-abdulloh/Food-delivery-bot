@@ -84,19 +84,13 @@ async def cancel_order(callback: CallbackQuery, state: FSMContext):
     
 
     await callback.message.answer(
-        f"Nega buyurtma #{order_id}ni bekor qilyapsiz?"
+        f"Nega buyurtma #{order_id} ni bekor qilyapsiz?"
     )
 
     await state.set_state(AdminCancelOrder.waiting_for_reason)
 
     await callback.answer()
 
-#IF INVALID REASON
-@router.message(AdminCancelOrder.waiting_for_reason)
-async def invalid_reason(message: Message):
-    await message.answer(
-        "Iltimos bekor qilish sababini matn ko'rinishida yuboring."
-    )
 
 #ASKING FOR WHY ADMIN CANCELED
 @router.message(AdminCancelOrder.waiting_for_reason,F.text)

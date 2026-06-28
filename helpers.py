@@ -3,26 +3,26 @@ from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardBut
 from aiogram.fsm.context import FSMContext
 from datetime import datetime
 
-
 import sqlite3
 import json
 
 #USER ROLES
 USERS = {
-    343240431: "admin",
+    1753325713: "admin",
     987654321: "kitchen",
     555555555: "driver",
 }
 
 
 #IDs
-ADMIN_ID = 34324043
+ADMIN_ID = 1753325713
 KITCHEN_ID = 987654321
 DRIVERS = {
     111111111: "Ali",
     222222222: "Bek",
     333333333: "John",
 }
+
 def is_admin(user_id):
     return user_id == ADMIN_ID
 
