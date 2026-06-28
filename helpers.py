@@ -362,13 +362,16 @@ def orders_are_open():
     return row and row[0] == "1"
 
 #MENU
-def add_menu_item(name, price):
+def add_menu_item(name, price, photo_file_id):
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
 
     cursor.execute(
-        "INSERT INTO menu (food_name, price) VALUES (?, ?)",
-        (name, price)
+        """
+        INSERT INTO menu (food_name, price, photo_file_id)
+        VALUES (?, ?, ?)
+        """,
+        (name, price, photo_file_id)
     )
 
     conn.commit()
@@ -389,37 +392,21 @@ def get_menu():
     conn = sqlite3.connect("database.db")
     cursor = conn.cursor()
 
-    cursor.execute("SELECT id, food_name, price FROM menu")
-    rows = cursor.fetchall()
+    cursor.execute(
+        "SELECT id, food_name, price, photo_file_id FROM menu"
+    )
 
+    rows = cursor.fetchall()
     conn.close()
 
     menu_dict = {}
 
-    for item_id, name, price in rows:
+    for item_id, name, price, photo_file_id in rows:
         menu_dict[item_id] = {
             "name": name,
-            "price": price
+            "price": price,
+            "photo_file_id": photo_file_id
         }
 
     return menu_dict
 
-
-# def seed_menu_from_dict():
-#     conn = sqlite3.connect("database.db")
-#     cursor = conn.cursor()
-
-#     # optional: clear existing menu
-#     cursor.execute("DELETE FROM menu")
-
-#     for item_id, item in MENU.items():
-#         cursor.execute(
-#             "INSERT INTO menu (name, price) VALUES (?, ?)",
-#             (item["name"], item["price"])
-#         )
-
-#     conn.commit()
-#     conn.close()
-
-# if __name__ == "__main__":
-#     seed_menu_from_dict()
