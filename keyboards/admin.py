@@ -11,8 +11,7 @@ def get_admin_keyboard(orders_open: bool):
     return ReplyKeyboardMarkup(
         keyboard=[
             [toggle_btn],
-            [KeyboardButton(text="📋 Bugungi Menu")]
-            # [KeyboardButton(text="👨‍🍳 Oshxonaga jo'natish")]
+            [KeyboardButton(text="📋 Menu boshqarish")]
         ],
         resize_keyboard=True
     )
@@ -24,7 +23,7 @@ def admin_menu_keyboard():
     builder.button(text="🗑 O'chirish")
     builder.button(text="🧹 Tozalash")
 
-    builder.button(text="📋 Menu")
+    builder.button(text="📋 Hozirgi Menu")
     builder.button(text="🔙 Orqaga")
 
     builder.adjust(2, 2, 1)
@@ -32,4 +31,32 @@ def admin_menu_keyboard():
     return builder.as_markup(
         resize_keyboard=True,
         one_time_keyboard=False
+    )
+
+def delete_menu_keyboard(menu):
+    builder = ReplyKeyboardBuilder()
+
+    for item in menu.values():
+        builder.button(text=item["name"])
+
+    builder.button(text="🔙 Orqaga")
+
+    builder.adjust(2)
+
+    return builder.as_markup(
+        resize_keyboard=True
+    )
+
+def menu_items_keyboard(menu):
+    builder = ReplyKeyboardBuilder()
+
+    for item in menu.values():
+        builder.button(text=item["name"])
+
+    builder.button(text="🔙 Orqaga")
+
+    builder.adjust(2)
+
+    return builder.as_markup(
+        resize_keyboard=True
     )

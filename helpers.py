@@ -39,21 +39,6 @@ def get_role(user_id: int) -> str:
     return USERS.get(user_id, "customer")
 
 
-#MENU VALIDATION
-def parse_line(line: str):
-    if "-" not in line:
-        raise ValueError("Invalid format")
-
-    name, price = line.rsplit("-", 1)
-
-    name = name.strip()
-    price = price.strip()
-
-    if not price.isdigit():
-        raise ValueError("Price must be number")
-
-    return name, int(price)
-
 #GET LOCATION
 def build_map_link(latitude,longitude):
     return f"https://maps.google.com/?q={latitude},{longitude}"
@@ -410,3 +395,14 @@ def get_menu():
 
     return menu_dict
 
+def delete_menu_item(name):
+    conn = sqlite3.connect("database.db")
+    cursor = conn.cursor()
+
+    cursor.execute(
+        "DELETE FROM menu WHERE food_name = ?",
+        (name,)
+    )
+
+    conn.commit()
+    conn.close()
