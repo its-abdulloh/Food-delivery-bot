@@ -1,4 +1,4 @@
-from aiogram.utils.keyboard import InlineKeyboardBuilder
+from aiogram.utils.keyboard import InlineKeyboardBuilder,ReplyKeyboardBuilder
 from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup, CallbackQuery
 from aiogram.fsm.context import FSMContext
 from datetime import datetime
@@ -45,16 +45,18 @@ def build_map_link(latitude,longitude):
 
 #FUNCTION THAT BUILDS MENU BUTTONS
 def build_menu(menu: dict):
-    builder = InlineKeyboardBuilder()
+    builder = ReplyKeyboardBuilder()
 
-    for item_id, item in menu.items():
-        builder.button(
-            text=f"{item['name']} - {item['price']} so'm",
-            callback_data=f"add:{item_id}"
-        )
+    for item in menu.values():
+        builder.button(text=f"{item["name"]}")
 
-    builder.adjust(1)
-    return builder.as_markup()
+
+    builder.adjust(2)
+    markup = builder.as_markup(
+        resize_keyboard=True,          
+        one_time_keyboard=False,
+    )
+    return markup
 
 
 #BUILD CART KEYBOARD
