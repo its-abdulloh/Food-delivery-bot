@@ -48,13 +48,13 @@ def build_menu(menu: dict):
     builder = ReplyKeyboardBuilder()
 
     for item in menu.values():
-        builder.button(text=f"{item["name"]}")
+        builder.button(text=f"{item['name']}")
 
 
     builder.adjust(2)
     markup = builder.as_markup(
         resize_keyboard=True,          
-        one_time_keyboard=False,
+        one_time_keyboard=True,
     )
     return markup
 
