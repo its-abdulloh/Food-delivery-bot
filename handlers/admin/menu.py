@@ -12,9 +12,9 @@ from keyboards.admin import admin_menu_keyboard,delete_menu_keyboard,menu_items_
 
 router = Router()
 
-@router.message(F.text == "📋 Bugungi Menu")
+@router.message(F.text == "📋 Menu boshqarish")
 async def menu_button(message: Message, state: FSMContext):
-    if not is_admin(message):
+    if not is_admin(message.from_user.id):
         await message.answer("Ruxsat yo'q!")
         return
     await message.answer(
@@ -25,7 +25,7 @@ async def menu_button(message: Message, state: FSMContext):
 #BACK BUTTON
 @router.message(F.text == "🔙 Orqaga")
 async def admin_back(message: Message):
-    if not is_admin(message):
+    if not is_admin(message.from_user.id):
         return
     
     await message.answer(
@@ -36,7 +36,7 @@ async def admin_back(message: Message):
 #ADD ITEM
 @router.message(F.text == "➕ Qo'shish")
 async def save_menu(message: Message, state: FSMContext):
-    if not is_admin(message):
+    if not is_admin(message.from_user.id):
         await message.answer("Ruxsat yo'q!")
         return
     await state.set_state(AddItem.waiting_for_name)
@@ -44,7 +44,7 @@ async def save_menu(message: Message, state: FSMContext):
 
 @router.message(AddItem.waiting_for_name)
 async def get_name(message: Message, state: FSMContext):
-    if not is_admin(message):
+    if not is_admin(message.from_user.id):
         await message.answer("Ruxsat yo'q!")
         return
     await state.update_data(name=message.text)
@@ -57,7 +57,7 @@ async def get_name(message: Message, state: FSMContext):
 
 @router.message(AddItem.waiting_for_price)
 async def get_price(message: Message, state: FSMContext):
-    if not is_admin(message):
+    if not is_admin(message.from_user.id):
         await message.answer("Ruxsat yo'q!")
         return
     if not message.text.isdigit():
@@ -72,7 +72,7 @@ async def get_price(message: Message, state: FSMContext):
 
 @router.message(AddItem.waiting_for_photo, F.photo)
 async def get_photo(message: Message, state: FSMContext):
-    if not is_admin(message):
+    if not is_admin(message.from_user.id):
         await message.answer("Ruxsat yo'q!")
         return
     photo = message.photo[-1].file_id
@@ -102,7 +102,7 @@ async def photo_required(message: Message):
 #DELETE ITEM
 @router.message(F.text == "🗑 O'chirish")
 async def delete_menu(message: Message, state: FSMContext):
-    if not is_admin(message):
+    if not is_admin(message.from_user.id):
         await message.answer("Ruxsat yo'q!")
         return
     menu = get_menu()
@@ -152,7 +152,7 @@ async def delete_item(message: Message, state: FSMContext):
 #CLEAR MENU
 @router.message(F.text == "🧹 Tozalash")
 async def clear_menu(message:Message):
-    if not is_admin(message):
+    if not is_admin(message.from_user.id):
         await message.answer("Ruxsat yo'q!")
         return
     clear_menu()
@@ -163,7 +163,7 @@ async def clear_menu(message:Message):
 #SHOW MENU
 @router.message(F.text == "📋 Menu")
 async def show_menu(message: Message, state: FSMContext):
-    if not is_admin(message):
+    if not is_admin(message.from_user.id):
         await message.answer("Ruxsat yo'q!")
         return
     menu = get_menu()
