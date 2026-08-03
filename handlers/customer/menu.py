@@ -61,15 +61,15 @@ async def show_item(message:Message,state: FSMContext):
 async def increase_amount(callbackquery: CallbackQuery,state:FSMContext):
     data = await state.get_data()
 
-    amount = await data.get("amount",1)+1
+    amount = data.get("amount",1)+1
 
     await state.update_data(amount=amount)
 
-    item_id= await data.get("id")
+    item_id= data.get("id")
 
-    item_name = await data.get("item")
+    item_name = data.get("item")
 
-    price = await data.get("price")
+    price = data.get("price")
 
     total = price*amount
 
@@ -81,6 +81,8 @@ async def increase_amount(callbackquery: CallbackQuery,state:FSMContext):
             ),
         reply_markup=menu_item_keyboard(item_id,amount)
     )
+
+    await callbackquery.answer()
 
     
 
@@ -95,11 +97,11 @@ async def decrease_amount(callbackquery:CallbackQuery,state:FSMContext):
 
     await state.update_data(amount=amount)
 
-    item_id= await data.get("id")
+    item_id= data.get("id")
     
-    item_name = await data.get("item")
+    item_name = data.get("item")
 
-    price = await data.get("price")
+    price = data.get("price")
 
     total = price*amount
 
@@ -112,25 +114,27 @@ async def decrease_amount(callbackquery:CallbackQuery,state:FSMContext):
         reply_markup=menu_item_keyboard(item_id,amount)
     )
 
-#ADDS ITEM TO TEMP CART
-# @router.callback_query(F.data.startswith("add:"))
-# async def add_to_cart(callbackquery: CallbackQuery, state: FSMContext):
-#     if not orders_are_open():
-#         await callbackquery.answer(
-#             "Buyurtmalar yopilgan",
-#             show_alert=True
-#         )
-#         return
-#     item_id = int(callbackquery.data.split(":")[1])
+    await callbackquery.answer()
 
-#     cart = await state.get_data()
-#     cart_items = cart.get("cart",{})
+# ADDS ITEM TO TEMP CART
+@router.callback_query(F.data.startswith("add:"))
+async def add_to_cart(callbackquery: CallbackQuery, state: FSMContext):
+    if not orders_are_open():
+        await callbackquery.answer(
+            "Buyurtmalar yopilgan",
+            show_alert=True
+        )
+        return
+    item_id = int(callbackquery.data.split(":")[1])
 
-#     #Add item to cart and its number
-#     cart_items[item_id] = cart_items.get(item_id, 0) + 1
+    data = await state.get_data()
+    cart_items = data.get("cart",{})
+
+    #Add item to cart and its number
+    cart_items[item_id] = cart_items.get(item_id, 0) + 1
     
-#     await state.update_data(cart=cart_items)
+    await state.update_data(cart=cart_items)
 
-#     item = MENU[item_id]
+    item = MENU[item_id]
 
-#     await callbackquery.answer(f"{item['name']} savatga qo'shildi.")
+    await callbackquery.answer(f"{item['name']} savatga qo'shildi.")
