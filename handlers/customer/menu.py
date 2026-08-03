@@ -32,7 +32,7 @@ async def show_menu(message: Message,state:FSMContext):
         )
         return
     
-    state.set_state(AddCart.menu_pressed)
+    await state.set_state(AddCart.menu_pressed)
     await message.answer(
         "🍽 Bugungi Menu:",
         reply_markup=build_menu(MENU)
@@ -130,8 +130,12 @@ async def add_to_cart(callbackquery: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     cart_items = data.get("cart",{})
 
-    #Add item to cart and its number
-    cart_items[item_id] = cart_items.get(item_id, 0) + 1
+    item_id = data.get("id")
+    amount = data.get("amount")
+
+
+    #Add item to cart and its amount
+    cart_items[item_id] = amount
     
     await state.update_data(cart=cart_items)
 

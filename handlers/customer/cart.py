@@ -31,10 +31,10 @@ async def view_cart(message: Message,state: FSMContext):
     text = "🛒 Savatingiz:\n\n"
     total = 0
 
-    for item_id,number in cart.items():
+    for item_id,amount in cart.items():
         item = MENU[item_id]
-        text += f"{number}x {item['name']} - {item['price']} so'm\n"
-        total+=item["price"]*number
+        text += f"{amount}x {item['name']} - {item['price']} so'm\n"
+        total+=item["price"]*amount
 
     text += f"\n💰Jami: {total}so'm"
     
