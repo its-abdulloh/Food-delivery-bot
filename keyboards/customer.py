@@ -34,7 +34,8 @@ def menu_item_keyboard(item_id,item_amount:int):
                 InlineKeyboardButton("➕",callback_data="increase"),
                 InlineKeyboardButton(f"{item_amount}"),
                 InlineKeyboardButton("➖",callback_data="decrease"),
-                InlineKeyboardButton("🛒 Savatga qo'shish",callback_data=f"add:{item_id}")
             ]
+            [InlineKeyboardButton("🛒 Savatga qo'shish",callback_data=f"add:{item_id}")]
         ]
     )
+    return keyboard

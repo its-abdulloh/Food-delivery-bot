@@ -44,7 +44,12 @@ async def show_menu(message: Message,state:FSMContext):
 async def show_item(message:Message,state: FSMContext):
     for item_id,item in MENU.items():
         if message.text == item["name"]:
-            state.update_data(item=f"{item['name']}",amount=1)
+            await state.update_data(
+                id=item_id,
+                item=f"{item['name']}",
+                price=f"{item["price"]}",
+                amount=1
+            )
             await message.answer_photo(
                 photo=item["photo"],
                 caption=f"<b>{item['name']}<b>\n\n{item['name']} - {item['price']}\n Hammasi: {item["price"]}",
@@ -52,8 +57,60 @@ async def show_item(message:Message,state: FSMContext):
             )
 
 #INCREASE
+@router.callback_query(F.data == "increase")
+async def increase_amount(callbackquery: CallbackQuery,state:FSMContext):
+    data = await state.get_data()
+
+    amount = await data.get("amount",1)+1
+
+    await state.update_data(amount=amount)
+
+    item_id= await data.get("id")
+
+    item_name = await data.get("item")
+
+    price = await data.get("price")
+
+    total = price*amount
+
+    await callbackquery.message.edit_caption(
+        caption=(
+            f"<b>{item_name}</b>\n\n"
+            f"{item_name} - {price}\n"
+            f"Hammasi: {total}"
+            ),
+        reply_markup=menu_item_keyboard(item_id,amount)
+    )
+
+    
 
 #DECREASE
+@router.callback_query(F.data=="decrease")
+async def decrease_amount(callbackquery:CallbackQuery,state:FSMContext):
+    data = await state.get_data()
+
+    amount = await data.get("amount")-1
+    if amount==0:
+        amount=1
+
+    await state.update_data(amount=amount)
+
+    item_id= await data.get("id")
+    
+    item_name = await data.get("item")
+
+    price = await data.get("price")
+
+    total = price*amount
+
+    await callbackquery.message.edit_caption(
+        caption=(
+            f"<b>{item_name}</b>\n\n"
+            f"{item_name} - {price}\n"
+            f"Hammasi: {total}"
+            ),
+        reply_markup=menu_item_keyboard(item_id,amount)
+    )
 
 #ADDS ITEM TO TEMP CART
 # @router.callback_query(F.data.startswith("add:"))
