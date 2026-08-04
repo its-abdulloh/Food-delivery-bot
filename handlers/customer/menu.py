@@ -186,3 +186,14 @@ async def add_to_cart(callbackquery: CallbackQuery, state: FSMContext):
     item = MENU[item_id]
 
     await callbackquery.answer(f"{item['name']} savatga qo'shildi.")
+
+    await callbackquery.message.delete()
+
+    await state.set_state(AddCart.menu_pressed)
+
+    await callbackquery.message.answer(
+        "🍽 Bugungi Menu:",
+        reply_markup=build_menu(MENU)
+    )
+
+    await callbackquery.answer("✅ Savatga qo'shildi!")
