@@ -8,15 +8,15 @@ import json
 
 #USER ROLES
 USERS = {
-    34324043: "admin",
+    1753325713: "admin",
     987654321: "kitchen",
     555555555: "driver",
 }
 
 
 #IDs
-# ADMIN_ID = 1753325713
-ADMIN_ID = 34324043
+# ADMIN_ID = 34324043
+ADMIN_ID = 1753325713
 KITCHEN_ID = 987654321
 DRIVERS = {
     111111111: "Ali",

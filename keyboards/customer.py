@@ -29,13 +29,24 @@ phone_keyboard = ReplyKeyboardMarkup(
 
 def menu_item_keyboard(item_id,item_amount:int):
     keyboard = InlineKeyboardMarkup(
-        keyboard=[
+        inline_keyboard=[
             [
-                InlineKeyboardButton("➕",callback_data="increase"),
-                InlineKeyboardButton(f"{item_amount}"),
-                InlineKeyboardButton("➖",callback_data="decrease"),
+                InlineKeyboardButton(text = "➕",callback_data="increase"),
+                InlineKeyboardButton(text = f"{item_amount}",callback_data="ignore"),
+                InlineKeyboardButton(text = "➖",callback_data="decrease"),
             ],
-            [InlineKeyboardButton("🛒 Savatga qo'shish",callback_data=f"add:{item_id}")]
+            [InlineKeyboardButton(text = "🛒 Savatga qo'shish",callback_data=f"add:{item_id}")]
         ]
     )
     return keyboard
+
+
+item_navigation_keyboard = ReplyKeyboardMarkup(
+    keyboard=[
+        [
+            KeyboardButton(text="⬅️ Orqaga"),
+            KeyboardButton(text="🛒 Savat")
+        ]
+    ],
+    resize_keyboard=True
+)

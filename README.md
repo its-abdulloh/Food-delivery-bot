@@ -1,4 +1,8 @@
 # Food-delivery-bot
+
+next step: implement cart system
+
+
 Telegram bot that handles food delivery
 
 #####################################################
@@ -179,4 +183,3 @@ kitchen.py
 driver.py 
 states/
 
-i just dont know what to build we have registration that asks for a number,start that checks roles menu and cart on the customer side and checkout that asks for location and name and picture of the reciept of the payment and after that it is sent automatically to admin to confirm and after orders close at 11 we send all of the orders sum to the kitchen and they prepare and then we sent drivers to get the orders and deliver but for now the last thing i made was opening and closing orders in the admin side customer side is done admin side has open close orders and a automitically sent messages of order detailes and receipt to verify and confirm thats where we are

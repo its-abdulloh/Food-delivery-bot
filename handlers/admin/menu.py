@@ -86,7 +86,7 @@ async def get_photo(message: Message, state: FSMContext):
     add_menu_item(
         name=name,
         price=price,
-        photo=photo
+        photo_file_id=photo
     )
 
     await message.answer(
@@ -161,7 +161,7 @@ async def clear_menu(message:Message):
 
 
 #SHOW MENU
-@router.message(F.text == "📋 Menu")
+@router.message(F.text == "📋 Hozirgi Menu")
 async def show_menu(message: Message, state: FSMContext):
     if not is_admin(message.from_user.id):
         await message.answer("Ruxsat yo'q!")
