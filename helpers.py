@@ -6,6 +6,8 @@ from datetime import datetime
 import sqlite3
 import json
 
+from keyboards.customer import build_cart_keyboard
+
 #USER ROLES
 USERS = {
     1753325713: "admin",
@@ -50,6 +52,8 @@ def build_menu(menu: dict):
 
     for item in menu.values():
         builder.button(text=f"{item['name']}")
+
+    builder.button(text="🛒 Savat")
 
 
     builder.adjust(2)

@@ -1,6 +1,6 @@
 # Food-delivery-bot
 
-next step: implement cart system
+next step: add savat in showing menu part
 
 
 Telegram bot that handles food delivery

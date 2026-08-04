@@ -72,30 +72,6 @@ async def back_to_menu(message: Message, state: FSMContext):
         reply_markup=build_menu(MENU)
     )
 
-@router.message(AddCart.item_selected,F.text == "🛒 Savat")
-async def show_cart(message: Message, state: FSMContext):
-    data = await state.get_data()
-    cart = data.get("cart", {})
-
-    if not cart:
-        await message.answer("🛒 Savatingiz bo'sh.")
-        return
-
-    text = "🛒 <b>Savatingiz:</b>\n\n"
-    total = 0
-
-    for item_id, amount in cart.items():
-        item = MENU[item_id]
-        subtotal = item["price"] * amount
-        total += subtotal
-
-        text += (
-            f"{item['name']} × {amount} = {subtotal}\n"
-        )
-
-    text += f"\n<b>Jami: {total}</b>"
-
-    await message.answer(text, parse_mode="HTML")
 
 #INCREASE
 @router.callback_query(F.data == "increase")
