@@ -4,10 +4,11 @@ from aiogram.fsm.context import FSMContext
 
 from helpers import (
     get_menu,
-    build_cart_keyboard,
     refresh_cart,
     orders_are_open
 )
+
+from keyboards.customer import build_cart_keyboard
 
 MENU = get_menu()
 
